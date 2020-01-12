@@ -3,13 +3,12 @@ project(fire_engine)
 
 set(CMAKE_CXX_STANDARD 17)
 
-option(testing "Build unit tests." OFF)
-
 add_subdirectory(src)
 include_directories(src)
 
-if(testing)
-
-    find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-    add_subdirectory(test)
-endif()
+# This is commented out since I can't make CLion play nice. Unfortunately, this means all of the tests need to be
+# compiled at every build.
+# option(testing "Build unit tests." ON)
+# if(testing)
+add_subdirectory(test)
+# endif()
