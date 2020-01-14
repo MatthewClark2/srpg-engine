@@ -8,6 +8,8 @@
 #include <boost/test/unit_test.hpp>
 #include "unit.h"
 
+using namespace srpg;
+
 BOOST_AUTO_TEST_CASE(BitwiseEnum) {
     auto greatKnight = MovementType::Armored | MovementType::Cavalry;
     BOOST_CHECK(greatKnight == MovementType::Armored);

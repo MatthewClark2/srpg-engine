@@ -3,3 +3,7 @@
 //
 
 #include "weapon.h"
+
+namespace srpg {
+
+}
