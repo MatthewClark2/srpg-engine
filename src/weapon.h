@@ -2,8 +2,8 @@
 // Created by matthew on 1/11/20.
 //
 
-#ifndef FIRE_ENGINE_WEAPON_H
-#define FIRE_ENGINE_WEAPON_H
+#ifndef SRPG_ENGINE_WEAPON_H
+#define SRPG_ENGINE_WEAPON_H
 
 #include <cstdint>
 #include <functional>
@@ -81,4 +81,4 @@ namespace srpg {
 
 }
 
-#endif //FIRE_ENGINE_WEAPON_H
+#endif // SRPG_ENGINE_WEAPON_H
