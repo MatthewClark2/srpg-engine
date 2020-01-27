@@ -12,10 +12,6 @@
 #include "unit_attrs.h"
 #include "weapon.h"
 
-// TODO(matthew-c21): Add remaining_hp function, and mark stats exclusively as base stats.
-// TODO(matthew-c21): Add specialized equipped_item() function that only returns the item if and only if it is an
-//  instance of Equipable.
-
 namespace srpg {
 
 // TODO(matthew-c21): These will ultimately want to be project level constants rather than engine level ones.
@@ -41,22 +37,30 @@ struct UnitClass {
   const WeaponType usable_weapon_types;
 
   // TODO(matthew-c21): Name these better. Applies to cpp file as well.
-  UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs, WeaponType weps);
+  UnitClass(const CoreStatSpread& stats, MovementType mov, UnitAttribute attrs, WeaponType weps);
 };
 
 class Unit {
  public:
-  // TODO(matthew-c21): Give option to set base level and experience as well. An internal level should be kept alongside
-  //  the display level to allow scaling on non level 1 base stats without needing to change the autoleveling algorithm
-  //  or needing to supply level 1 bases for higher level units.
-  Unit(CoreStatSpread baseStats, CoreStatSpread growths, UnitAttribute attributes, const UnitClass& clazz,
-      int baseWeaponRank);
+  Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+      const UnitClass& clazz, int baseWeaponRank);
+
+  Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+      const UnitClass& clazz, int base_weapon_rank, int base_exp);
+
+  Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+      const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level);
 
   int rnk() const;
 
   int exp() const;
 
   int level() const;
+
+  /**
+   * Obtain the remaining health of this unit. The value will never be greater than stats.hp, or lower than 0.
+   */
+  int remaining_hp() const;
 
   bool is_equipped() const;
 
@@ -73,6 +77,19 @@ class Unit {
   bool equip();
 
   /**
+   * Determine whether or not the unit can equip their currently held item. Functionally identical to
+   * @code{can_equip(this->item);}.
+   * @return false if the item is not an instance of Equipable, if it is of an inappropriate weapon type, or if the unit
+   *    lacks the required weapon rank.
+   */
+  bool can_equip() const;
+
+  /**
+   * Determine whether or not the unit can equip the provided item without actually doing so.
+   */
+  bool can_equip(InventoryItem& item) const;
+
+  /**
    * Determines whether or not the given attributes form a subset of the unit's own attributes.
    * @param attributes a UnitAttribute
    * @return true if the unit has all of the given attributes, and false otherwise.
@@ -84,9 +101,13 @@ class Unit {
    * moved by a trade or discard action.
    * @return a pointer to this unit's held item, or nullptr of one isn't present.
    */
-  Equipable* held_item();
+  InventoryItem* held_item();
 
-  const Equipable* held_item() const;
+  const InventoryItem* held_item() const;
+
+  Equipable* equipped_item();
+
+  const Equipable* equipped_item() const;
 
   /**
    * Take the item currently held by the unit. Returns nullptr if the unit is holding nothing.
@@ -160,12 +181,16 @@ class Unit {
   // std::optional<Unit> clazz(const UnitClass& new_class);
 
  private:
+  // Stats are just base stats
   CoreStatSpread stats_;
   CoreStatSpread buffs_;
   const CoreStatSpread growths_;
-  int rnk_, level_, exp_;
+  int rnk_, base_level_, levels_gained_, exp_;
+  int remaining_hp_;
 
   const UnitAttribute base_attributes_;
+
+  // TODO(matthew-c21): Find a better data type for this when reclassing becomes available.
   const UnitClass& clazz_;
 
   // I'd like an inventory system like Gaiden since it's both easier to handle, and adds a new layer of inventory

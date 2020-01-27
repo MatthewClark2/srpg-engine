@@ -7,7 +7,6 @@
 
 namespace srpg {
 
-// TODO(matthew-c21): Add Effectiveness enum, since MovementType cannot have a default.
 enum class MovementType {
   Flying,
   Cavalry,

@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(stat_buffing) {
 BOOST_AUTO_TEST_CASE(hp_reduction) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 4);
 
-  BOOST_CHECK_EQUAL(merc_bases.hp, x.remaining_hp());
+  BOOST_CHECK(merc_bases.hp == x.remaining_hp());
 
   x.offset_hp(-6);
 
@@ -87,14 +87,14 @@ BOOST_AUTO_TEST_CASE(hp_restoration) {
   x.offset_hp(-6);
   x.offset_hp(4);
 
-  BOOST_CHECK_EQUAL(merc_bases.hp, x.stats().hp);
-  BOOST_CHECK_EQUAL(merc_bases.hp - 2, x.remaining_hp());
+  BOOST_CHECK(merc_bases.hp == x.stats().hp);
+  BOOST_CHECK(merc_bases.hp - 2 == x.remaining_hp());
 }
 
 BOOST_AUTO_TEST_CASE(no_item_by_default) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 4);
 
-  BOOST_CHECK_EQUAL(nullptr, x.held_item());
+  BOOST_CHECK(nullptr == x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(granting_an_item) {
@@ -111,10 +111,8 @@ BOOST_AUTO_TEST_CASE(granting_an_item) {
 
   // I could check for reduced durability here, but have decided to put that off with related tests.
 
-  BOOST_CHECK_EQUAL(merc_bases.hp - 5, x.remaining_hp());
+  BOOST_CHECK(merc_bases.hp - 5 == x.remaining_hp());
 }
-
-// TODO(matthew-c21): Test level ups, equipping, and death.
 
 BOOST_AUTO_TEST_CASE(autoleveling) {
   Unit x(merc_bases, CoreStatSpread(90, 45, 50, 50, 45, 50, 50), UnitAttribute::None, mercenary, 8);
@@ -129,29 +127,29 @@ BOOST_AUTO_TEST_CASE(autoleveling) {
   BOOST_CHECK_EQUAL(2, x.level());
 
   // No growths are high enough to level anything yet.
-  BOOST_CHECK_EQUAL(merc_bases, x.stats());
+  BOOST_CHECK(merc_bases == x.stats());
 
   x.give_exp(EXP_PER_LEVEL, failed);
   BOOST_REQUIRE(! failed);
   BOOST_CHECK_EQUAL(3, x.level());
 
-  BOOST_CHECK_EQUAL(merc_bases + CoreStatSpread(1, 0, 1, 1, 0, 1, 1), x.stats());
+  BOOST_CHECK(merc_bases + CoreStatSpread(1, 0, 1, 1, 0, 1, 1) == x.stats());
 }
 
 BOOST_AUTO_TEST_CASE(unequipped_by_default) {
   Unit x(merc_bases, CoreStatSpread(90, 45, 50, 50, 45, 50, 50), UnitAttribute::None, mercenary, 8);
 
   BOOST_CHECK(! x.is_equipped());
-  BOOST_CHECK_EQUAL(nullptr, x.held_item());
+  BOOST_CHECK(nullptr == x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(equip_fails_when_item_not_present) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
 
-  BOOST_REQUIRE_EQUAL(nullptr, x.held_item());
+  BOOST_REQUIRE(nullptr == x.held_item());
 
   BOOST_CHECK(! x.equip());
-  BOOST_REQUIRE_EQUAL(nullptr, x.held_item());
+  BOOST_REQUIRE(nullptr == x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(equipping_a_non_equippable_item_fails) {
@@ -173,16 +171,18 @@ BOOST_AUTO_TEST_CASE(equipping_a_non_equippable_item_fails) {
 
 BOOST_AUTO_TEST_CASE(able_to_equip_an_eqiupable_item) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
-  Weapon w(WeaponType::Sword, MovementType::Infantry, 1, 1, 1, 1, 1, false);
+  Weapon w(WeaponType::Sword, UnitAttribute::None, 1, 1, 1, 1, 1, false);
 
   x.give_item(w);
 
   BOOST_CHECK(nullptr != x.held_item());
   BOOST_CHECK(nullptr == x.equipped_item());
-  BOOST_CHECK(! x.is_equipped());
+  BOOST_CHECK(!x.is_equipped());
   BOOST_CHECK(x.equip());
   BOOST_CHECK(x.is_equipped());
 }
+
+// TODO(matthew-c21): Add tests for units being (un)able to equip weapons of certain ranks or type based on class.
 
 BOOST_AUTO_TEST_CASE(units_die_at_zero_hp) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);

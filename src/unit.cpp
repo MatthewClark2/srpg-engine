@@ -13,14 +13,9 @@
 
 namespace srpg {
 
-// TODO(matthew-c21): Move relevant implementations to unit_attrs.cpp when convenient.
-
-// TODO(matthew-c21): Inline these once they have been tested.
-
-Unit::Unit(CoreStatSpread baseStats, CoreStatSpread growths, UnitAttribute attributes, const UnitClass& clazz,
-           int baseWeaponRank)
-    : base_attributes_(attributes), growths_(growths), rnk_(baseWeaponRank), stats_(baseStats),
-    clazz_(clazz), equipped_(false), level_(1), exp_(0) {
+Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+    const UnitClass& clazz, int base_weapon_rank)
+    : Unit(base_stats, growths, attributes, clazz, base_weapon_rank, 0, 1) {
 }
 
 int Unit::rnk() const {
@@ -71,11 +66,11 @@ const UnitClass& Unit::clazz() const {
   throw std::exception();
 }
 
-Equipable* Unit::held_item() {
+InventoryItem* Unit::held_item() {
   return nullptr;
 }
 
-const Equipable* Unit::held_item() const {
+const InventoryItem* Unit::held_item() const {
   return nullptr;
 }
 
@@ -99,7 +94,40 @@ void Unit::buff(CoreStatSpread mod) {
 
 }
 
-UnitClass::UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs, WeaponType weps)
+Equipable* Unit::equipped_item() {
+  return nullptr;
+}
+
+const Equipable* Unit::equipped_item() const {
+  return nullptr;
+}
+
+int Unit::remaining_hp() const {
+  return 0;
+}
+
+bool Unit::can_equip() const {
+  return false;
+}
+
+bool Unit::can_equip(srpg::InventoryItem& item) const {
+  return false;
+}
+
+Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+    const UnitClass& clazz, int base_weapon_rank, int base_exp) : Unit(base_stats, growths, attributes, clazz,
+        base_weapon_rank, base_exp, 1) {
+
+}
+
+Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
+    const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level)
+    : stats_(base_stats), growths_(growths), base_attributes_(attributes), clazz_(clazz), rnk_(base_weapon_rank),
+    exp_(base_exp), base_level_(base_level), levels_gained_(0) {
+  remaining_hp_ = base_stats.hp;
+}
+
+UnitClass::UnitClass(const CoreStatSpread& stats, MovementType mov, UnitAttribute attrs, WeaponType weps)
     : stat_bonuses(stats), movement_type(mov), class_attributes(attrs), usable_weapon_types(weps) {
 }
 

@@ -10,6 +10,8 @@
 #include <memory>
 #include "unit_attrs.h"
 
+// TODO(matthew-c21): Add builders.
+
 namespace srpg {
 
 class Unit;
@@ -42,11 +44,11 @@ class Durability {
 
 class InventoryItem {
  public:
-  InventoryItem(CoreStatSpread bonuses, std::function<void(Unit&)> on_use);
+  InventoryItem(const CoreStatSpread& bonuses, const std::function<void(Unit&)>& on_use);
 
   CoreStatSpread stat_bonuses();
 
-  void on_use(Unit& target);
+  virtual void on_use(Unit& target);
 
   virtual ~InventoryItem() = default;
 
@@ -64,12 +66,14 @@ class Equipable : public InventoryItem {
   virtual int required_rank() const;
 
  protected:
-  Equipable(int min_range, int max_range, int required_rank, Durability* durability);
+  Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability);
 
-  Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses);
+  Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability,
+            const CoreStatSpread& bonuses);
 
-  Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses, std::function<void(Unit&)> on_use)
-      : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(durability) {}
+  Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability,
+            const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use)
+      : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(std::move(durability)) {}
 
  private:
   const int min_range_, max_range_;
@@ -86,26 +90,30 @@ class Weapon : public Equipable {
   int accuracy() const;
   int critical() const;
   bool is_magic() const;
-  MovementType effectiveness() const;
+  UnitAttribute effectiveness() const;
 
   /**
    * Create a 1 range weapon.
    */
-  Weapon(WeaponType, MovementType, int, int, int, int, int, bool);
+  Weapon(WeaponType type, UnitAttribute effectiveness, int might, int weight,
+         int accuracy, int critical, int required_rank, bool is_magic);
 
   /**
    * Construct a new weapon with a custom range.
    */
-  Weapon(WeaponType, MovementType, int, int, int, int, int, int, int, bool);
+  Weapon(WeaponType type, UnitAttribute effectiveness, int min_range, int max_range, int might, int weight,
+         int accuracy, int critical, int required_rank, bool is_magic);
+
+  Weapon(WeaponType type, UnitAttribute effectiveness, std::unique_ptr<Durability> durability, int min_range, int max_range, int might, int weight,
+         int accuracy, int critical, int required_rank, bool is_magic);
 
  private:
   WeaponType type_;
-  MovementType effectiveness_;
+  UnitAttribute effectiveness_;
   int might_;
   int weight_;
   int accuracy_;
   int critical_;
-  int required_rank_;
   bool is_magic_;
 };
 
@@ -129,8 +137,9 @@ class Unbreakable : public Durability {
 
 class Staff : public Equipable {
  public:
-  Staff(int min_range, int max_range, int required_rank, Durability* durability, std::function<int(Unit)> healing_formula)
-    : Equipable(min_range, max_range, required_rank, durability), healing_formula_(std::move(healing_formula)) {};
+  Staff(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability,
+        std::function<int(Unit)> healing_formula)
+    : Equipable(min_range, max_range, required_rank, std::move(durability)), healing_formula_(std::move(healing_formula)) {};
 
  private:
   const std::function<int(Unit)> healing_formula_;

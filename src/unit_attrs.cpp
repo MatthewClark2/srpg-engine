@@ -6,6 +6,8 @@
 
 namespace srpg {
 
+// TODO(matthew-c21): Inline the binary operators after they have been tested.
+
 UnitAttribute operator|(UnitAttribute a, UnitAttribute b) {
   return UnitAttribute(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
 }
