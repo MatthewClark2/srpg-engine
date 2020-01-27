@@ -16,9 +16,6 @@ namespace srpg {
 // TODO(matthew-c21): Move relevant implementations to unit_attrs.cpp when convenient.
 
 // TODO(matthew-c21): Inline these once they have been tested.
-UnitAttribute operator|(UnitAttribute a, UnitAttribute b) {
-  return UnitAttribute(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
-}
 
 Unit::Unit(CoreStatSpread baseStats, CoreStatSpread growths, UnitAttribute attributes, const UnitClass& clazz,
            int baseWeaponRank)
@@ -104,14 +101,6 @@ void Unit::buff(CoreStatSpread mod) {
 
 UnitClass::UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs, WeaponType weps)
     : stat_bonuses(stats), movement_type(mov), class_attributes(attrs), usable_weapon_types(weps) {
-}
-
-CoreStatSpread CoreStatSpread::operator+(const CoreStatSpread& rhs) const {
-  return CoreStatSpread();
-}
-
-bool CoreStatSpread::operator==(const CoreStatSpread& rhs) const {
-  return false;
 }
 
 } // namespace srpg

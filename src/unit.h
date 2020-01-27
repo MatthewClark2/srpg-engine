@@ -43,6 +43,9 @@ struct UnitClass {
 
 class Unit {
  public:
+  // TODO(matthew-c21): Give option to set base level and experience as well. An internal level should be kept alongside
+  //  the display level to allow scaling on non level 1 base stats without needing to change the autoleveling algorithm
+  //  or needing to supply level 1 bases for higher level units.
   Unit(CoreStatSpread baseStats, CoreStatSpread growths, UnitAttribute attributes, const UnitClass& clazz,
       int baseWeaponRank);
 

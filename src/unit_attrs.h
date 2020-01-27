@@ -50,6 +50,7 @@ struct CoreStatSpread {
 };
 
 UnitAttribute operator|(UnitAttribute a, UnitAttribute b);
+UnitAttribute operator&(UnitAttribute a, UnitAttribute b);
 
 }  // end namespace srpg
 
