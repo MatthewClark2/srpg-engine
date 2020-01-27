@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(core_stat_behavior) {
   CoreStatSpread a(1, 2, 1, 2, 1, 2, 1);
   CoreStatSpread b(2, 1, 2, 1, 2, 1, 2);
 
-  BOOST_ASSERT((a + b) == CoreStatSpread(3, 3, 3, 3, 3, 3, 3));
+  BOOST_CHECK((a + b) == CoreStatSpread(3, 3, 3, 3, 3, 3, 3));
 }
 
 BOOST_AUTO_TEST_CASE(stats_correct_after_class_bonus) {
@@ -28,5 +28,5 @@ BOOST_AUTO_TEST_CASE(stats_correct_after_class_bonus) {
   Unit merc1(CoreStatSpread(20, 7, 4, 0, 0, 5, 9), CoreStatSpread(), UnitAttribute::None, mercenary, 3);
   Unit merc2(merc_bases, CoreStatSpread(), UnitAttribute::None, myrmidon, 3);
 
-  BOOST_ASSERT(merc_bases == merc1.stats());
+  BOOST_CHECK(merc_bases == merc1.stats());
 }

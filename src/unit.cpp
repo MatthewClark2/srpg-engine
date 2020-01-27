@@ -8,8 +8,12 @@
 #include <exception>
 
 #include "unit.h"
+#include "unit_attrs.h"
+
 
 namespace srpg {
+
+// TODO(matthew-c21): Move relevant implementations to unit_attrs.cpp when convenient.
 
 // TODO(matthew-c21): Inline these once they have been tested.
 UnitAttribute operator|(UnitAttribute a, UnitAttribute b) {
@@ -102,11 +106,12 @@ UnitClass::UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs
     : stat_bonuses(stats), movement_type(mov), class_attributes(attrs), usable_weapon_types(weps) {
 }
 
-CoreStatSpread operator==(const CoreStatSpread& lhs, const CoreStatSpread&& rhs) {
+CoreStatSpread CoreStatSpread::operator+(const CoreStatSpread& rhs) const {
   return CoreStatSpread();
 }
 
-CoreStatSpread operator+(const CoreStatSpread& lhs, const CoreStatSpread&& rhs) {
-  return CoreStatSpread();
+bool CoreStatSpread::operator==(const CoreStatSpread& rhs) const {
+  return false;
 }
+
 } // namespace srpg

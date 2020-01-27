@@ -5,6 +5,8 @@
 #ifndef SRPG_ENGINE_UNIT_ATTRS_H
 #define SRPG_ENGINE_UNIT_ATTRS_H
 
+namespace srpg {
+
 enum class MovementType {
   Flying,
   Cavalry,
@@ -42,10 +44,13 @@ struct CoreStatSpread {
   CoreStatSpread(int hp, int atk, int def, int res, int luk, int skl, int spd)
       : hp(hp), atk(atk), def(def), res(res), luk(luk), skl(skl), spd(spd) {}
 
-  friend CoreStatSpread operator==(const CoreStatSpread& lhs, const CoreStatSpread&& rhs);
-  friend CoreStatSpread operator+(const CoreStatSpread& lhs, const CoreStatSpread&& rhs);
+  bool operator==(const CoreStatSpread& rhs) const;
+
+  CoreStatSpread operator+(const CoreStatSpread& lhs) const;
 };
 
 UnitAttribute operator|(UnitAttribute a, UnitAttribute b);
+
+}  // end namespace srpg
 
 #endif //SRPG_ENGINE_UNIT_ATTRS_H
