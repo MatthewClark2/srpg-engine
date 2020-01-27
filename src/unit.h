@@ -9,6 +9,8 @@
 #include <optional>
 #include <unordered_set>
 #include <memory>
+#include "unit_attrs.h"
+#include "weapon.h"
 
 namespace srpg {
 
@@ -16,47 +18,6 @@ namespace srpg {
 constexpr int MAX_INVENTORY_SIZE = 5;
 constexpr int EXP_PER_LEVEL = 100;
 constexpr int MAX_LEVEL = 20;
-
-struct InventoryItem;
-struct Equipable;
-enum class WeaponType;
-
-enum class MovementType {
-  Flying,
-  Cavalry,
-  Infantry,
-};
-
-/**
- * Character attributes, partially modified by the unit's class. These may be combined bitwise in order to define a unit
- * with multiple attributes. For example, Tiki on a pegasus would be both Draconic and Flying.
- */
-enum class UnitAttribute {
-  Winged = 0x01,
-  Armored = 0x02,
-  Draconic = 0x04,
-  Beastial = 0x08,
-  None = 0x00,
-};
-
-/**
- * Centralized definition of core stats. This struct may be used to define baselines, growths, and bonuses. Its
- * existence is justified by the fact that all units have a set of stats and growths for said stats, most items can
- * provide bonuses to said stats, and classes come with stat modifiers. Having a single interface just reduces code
- * clutter, although it does require copies to be made frequently, which may impact performance slightly when compared
- * to single integers.
- */
-struct CoreStatSpread {
-  int hp, atk, def, res, luk, skl, spd;
-
-  /**
-   * Default 0 constructor.
-   */
-  CoreStatSpread() : CoreStatSpread(0, 0, 0, 0, 0, 0, 0) {}
-
-  CoreStatSpread(int hp, int atk, int def, int res, int luk, int skl, int spd)
-      : hp(hp), atk(atk), def(def), res(res), luk(luk), skl(skl), spd(spd) {}
-};
 
 /**
  * Classes should be defined globally, and passed around by const reference.
@@ -112,12 +73,26 @@ class Unit {
    */
   bool has_attributes(UnitAttribute attributes) const;
 
-  std::optional<const Equipable&> held_item() const;
+  /**
+   * Return a mutable pointer to the underlying held item. The lifetime of this pointer is managed by this object unless
+   * moved by a trade or discard action.
+   * @return a pointer to this unit's held item, or nullptr of one isn't present.
+   */
+  Equipable* held_item();
 
-  std::optional<Equipable&> held_item();
+  const Equipable* held_item() const;
 
-  std::optional<InventoryItem&> drop_item();
+  /**
+   * Take the item currently held by the unit. Returns nullptr if the unit is holding nothing.
+   * @param [in] successful set to true if the operation returned a non-nullptr value, false if nullptr is returned.
+   * @return transferred ownership of the unit's held item.
+   */
+  std::unique_ptr<InventoryItem> drop_item(bool& successful);
 
+  /**
+   * Give an item to the unit. If the unit is already holding an item, it will be discarded and replaced.
+   * @param item the new item that the unit should hold.
+   */
   void give_item(InventoryItem& item);
 
   /**
@@ -193,8 +168,6 @@ class Unit {
 
   bool equipped_;
 };
-
-UnitAttribute operator|(UnitAttribute a, UnitAttribute b);
 
 } // namespace srpg
 

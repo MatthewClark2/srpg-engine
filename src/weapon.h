@@ -7,9 +7,12 @@
 
 #include <cstdint>
 #include <functional>
-#include "unit.h"
+#include <memory>
+#include "unit_attrs.h"
 
 namespace srpg {
+
+class Unit;
 
 constexpr int INFINITE_DURABILITY = -1;
 
@@ -61,16 +64,18 @@ class Equipable : public InventoryItem {
   virtual int required_rank() const;
 
  protected:
-  const int min_range_, max_range_;
-  const int required_rank_;
-  std::unique_ptr<Durability> durability_;
-
   Equipable(int min_range, int max_range, int required_rank, Durability* durability);
 
   Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses);
 
   Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses, std::function<void(Unit&)> on_use)
-    : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(durability) {}
+      : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(durability) {}
+
+ private:
+  const int min_range_, max_range_;
+  const int required_rank_;
+
+  std::unique_ptr<Durability> durability_;
 };
 
 class Weapon : public Equipable {

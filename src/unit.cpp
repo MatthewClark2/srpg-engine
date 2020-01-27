@@ -70,16 +70,43 @@ const UnitClass& Unit::clazz() const {
   throw std::exception();
 }
 
-std::optional<Equipable&> Unit::held_item() {
-  return std::optional<Equipable&>();
+Equipable* Unit::held_item() {
+  return nullptr;
 }
 
-std::optional<const Equipable&> Unit::held_item() const {
-  return std::optional<const Equipable&>();
+const Equipable* Unit::held_item() const {
+  return nullptr;
+}
+
+std::unique_ptr<InventoryItem> Unit::drop_item(bool& successful) {
+  return nullptr;
+}
+
+void Unit::give_item(InventoryItem& item) {
+
+}
+
+bool Unit::dead() const {
+  return false;
+}
+
+void Unit::offset_hp(int amount) {
+
+}
+
+void Unit::buff(CoreStatSpread mod) {
+
 }
 
 UnitClass::UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs, WeaponType weps)
     : stat_bonuses(stats), movement_type(mov), class_attributes(attrs), usable_weapon_types(weps) {
 }
 
+CoreStatSpread operator==(const CoreStatSpread& lhs, const CoreStatSpread&& rhs) {
+  return CoreStatSpread();
+}
+
+CoreStatSpread operator+(const CoreStatSpread& lhs, const CoreStatSpread&& rhs) {
+  return CoreStatSpread();
+}
 } // namespace srpg
