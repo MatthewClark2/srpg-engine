@@ -22,4 +22,8 @@ bool CoreStatSpread::operator==(const CoreStatSpread& rhs) const {
   return false;
 }
 
+CoreStatSpread::CoreStatSpread(const CoreStatSpread& spread) {
+
+}
+
 }

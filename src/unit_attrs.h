@@ -7,6 +7,7 @@
 
 namespace srpg {
 
+// TODO(matthew-c21): Add Effectiveness enum, since MovementType cannot have a default.
 enum class MovementType {
   Flying,
   Cavalry,
@@ -40,6 +41,8 @@ struct CoreStatSpread {
    * Default 0 constructor.
    */
   CoreStatSpread() : CoreStatSpread(0, 0, 0, 0, 0, 0, 0) {}
+
+  CoreStatSpread(const CoreStatSpread& spread);
 
   CoreStatSpread(int hp, int atk, int def, int res, int luk, int skl, int spd)
       : hp(hp), atk(atk), def(def), res(res), luk(luk), skl(skl), spd(spd) {}

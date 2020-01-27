@@ -114,6 +114,8 @@ class Weapon : public Equipable {
  */
 class Unbreakable : public Durability {
  public:
+  Unbreakable();
+
   int remaining_durability() final;
 
   int max_durability() final;

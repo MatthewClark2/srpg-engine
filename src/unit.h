@@ -12,10 +12,13 @@
 #include "unit_attrs.h"
 #include "weapon.h"
 
+// TODO(matthew-c21): Add remaining_hp function, and mark stats exclusively as base stats.
+// TODO(matthew-c21): Add specialized equipped_item() function that only returns the item if and only if it is an
+//  instance of Equipable.
+
 namespace srpg {
 
 // TODO(matthew-c21): These will ultimately want to be project level constants rather than engine level ones.
-constexpr int MAX_INVENTORY_SIZE = 5;
 constexpr int EXP_PER_LEVEL = 100;
 constexpr int MAX_LEVEL = 20;
 
