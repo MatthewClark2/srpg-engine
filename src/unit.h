@@ -8,7 +8,7 @@
 #include <cstdint>
 #include <optional>
 #include <unordered_set>
-#include <bits/unique_ptr.h>
+#include <memory>
 
 namespace srpg {
 
@@ -48,6 +48,11 @@ enum class UnitAttribute {
  */
 struct CoreStatSpread {
   int hp, atk, def, res, luk, skl, spd;
+
+  /**
+   * Default 0 constructor.
+   */
+  CoreStatSpread() : CoreStatSpread(0, 0, 0, 0, 0, 0, 0) {}
 
   CoreStatSpread(int hp, int atk, int def, int res, int luk, int skl, int spd)
       : hp(hp), atk(atk), def(def), res(res), luk(luk), skl(skl), spd(spd) {}
@@ -94,12 +99,11 @@ class Unit {
   void unequip();
 
   /**
-   * Attempt to equip the item at the provided index. Does nothing on failure.
-   * @param pos the position of the desired equipable item.
-   * @return true if the operation succeeds. False if the index is out of bounds or points to an element that the unit
-         cannot naturally equip.
+   * Attempt to equip the item held by the unit. Does nothing if the unit is already holding their item, or if there is
+   * no item to equip.
+   * @return the status of whether or not the unit is equipped after the operation.
    */
-  bool equip(int pos);
+  bool equip();
 
   /**
    * Determines whether or not the given attributes form a subset of the unit's own attributes.
@@ -108,7 +112,13 @@ class Unit {
    */
   bool has_attributes(UnitAttribute attributes) const;
 
-  std::optional<std::shared_ptr<Equipable>> equipped_item();
+  std::optional<const Equipable&> held_item() const;
+
+  std::optional<Equipable&> held_item();
+
+  std::optional<InventoryItem&> drop_item();
+
+  void give_item(InventoryItem& item);
 
   /**
    * Similar to #giveExperience(int, bool), but discards the output parameter.
@@ -136,6 +146,26 @@ class Unit {
 
   const UnitClass& clazz() const;
 
+  /**
+   * Determine whether or not this unit is capable of combat. Generally speaking, this only happens when a unit dies,
+   * although there are plans to leave script triggers to disable units.
+   * @return true if the unit should be removed from the map.
+   */
+  bool dead() const;
+
+  /**
+   * Restore health or inflict damage, depending on the sign of amount. Health cannot become negative.
+   * @param amount the amount of health to be restored or damage inflicted.
+   */
+  void offset_hp(int amount);
+
+  /**
+   * Apply (de)buffs. These are persistent. Should a negative buff be greater than the actual stat, the value will be
+   * capped at 0 (1 for HP). Note that HP (de)buffs only apply to max HP, not currently remaining HP.
+   * @param mod total (de)buffs across all stats.
+   */
+  void buff(CoreStatSpread mod);
+
   /*
    * Disabled until reclassing is enabled.
    *
@@ -150,17 +180,16 @@ class Unit {
 
  private:
   CoreStatSpread stats_;
+  CoreStatSpread buffs_;
   const CoreStatSpread growths_;
   int rnk_, level_, exp_;
 
   const UnitAttribute base_attributes_;
   const UnitClass& clazz_;
 
-  // Shared pointers are needed since the existence of these items are tied to the unit that has them. In particular,
-  // references may be held by the unit, damage calculation, and display engine simultaneously. However, the general
-  // case will be a single instance of any given shared pointer.
-  std::vector<std::shared_ptr<Equipable>> weapons_inventory_;
-  std::vector<std::shared_ptr<InventoryItem>> items_inventory_;
+  // I'd like an inventory system like Gaiden since it's both easier to handle, and adds a new layer of inventory
+  // management not found in most of the games.
+  std::unique_ptr<Equipable> inventory_;
 
   bool equipped_;
 };

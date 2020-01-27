@@ -42,16 +42,12 @@ void Unit::unequip() {
 
 }
 
-bool Unit::equip(int pos) {
+bool Unit::equip() {
   return false;
 }
 
 bool Unit::has_attributes(UnitAttribute attributes) const {
   return false;
-}
-
-std::optional<std::shared_ptr<Equipable>> Unit::equipped_item() {
-  return std::optional<std::shared_ptr<Equipable>>();
 }
 
 bool Unit::give_exp(int exp) {
@@ -72,6 +68,14 @@ UnitAttribute Unit::attributes() const {
 
 const UnitClass& Unit::clazz() const {
   throw std::exception();
+}
+
+std::optional<Equipable&> Unit::held_item() {
+  return std::optional<Equipable&>();
+}
+
+std::optional<const Equipable&> Unit::held_item() const {
+  return std::optional<const Equipable&>();
 }
 
 UnitClass::UnitClass(CoreStatSpread stats, MovementType mov, UnitAttribute attrs, WeaponType weps)

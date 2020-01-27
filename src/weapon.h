@@ -11,73 +11,123 @@
 
 namespace srpg {
 
-    enum class WeaponType {
-        Axe = 0x01,
-        Tome = 0x02,
-        Lance = 0x04,
-        Sword = 0x08,
-        Stone = 0x10,
-        Staff = 0x20,
-    };
+constexpr int INFINITE_DURABILITY = -1;
 
-    constexpr WeaponType operator|(WeaponType a, WeaponType b);
+enum class WeaponType {
+  Axe = 0x01,
+  Tome = 0x02,
+  Lance = 0x04,
+  Sword = 0x08,
+  Stone = 0x10,
+  Staff = 0x20,
+};
 
-    bool operator==(WeaponType a, WeaponType b);
+class Durability {
+ public:
+  virtual int remaining_durability() = 0;
 
-// TODO(matthew-c21): Consider refactoring to a component to avoid issues with subclassing for unbreakable weapons.
-    struct Consumable {
-        virtual int remainingDurability() = 0;
+  virtual int max_durability() = 0;
 
-        virtual int maxDurability() = 0;
+  virtual void reduce_durability() = 0;
 
-        virtual bool reduceDurability() = 0;
+  virtual void reduce_durability(int amount) = 0;
 
-        virtual bool isBroken() = 0;
-    };
+  virtual bool is_broken() = 0;
 
-    struct InventoryItem {
-        virtual void hpBonus() = 0;
+  virtual ~Durability() = default;
+};
 
-        virtual void powBonus() = 0;
+class InventoryItem {
+ public:
+  InventoryItem(CoreStatSpread bonuses, std::function<void(Unit&)> on_use);
 
-        virtual void defBonus() = 0;
+  CoreStatSpread stat_bonuses();
 
-        virtual void resBonus() = 0;
+  void on_use(Unit& target);
 
-        virtual void sklBonus() = 0;
+  virtual ~InventoryItem() = default;
 
-        virtual void lukBonus() = 0;
+ private:
+  CoreStatSpread stat_bonuses_;
+  std::function<void(Unit&)> on_use_;
+};
 
-        virtual void spdBonus() = 0;
-    };
+class Equipable : public InventoryItem {
+ public:
+  virtual std::tuple<int, int> get_range() const;
 
-    struct Equipable {
-        const int minRange, maxRange;
+  virtual Durability& durability();
 
-    protected:
-        Equipable(int minRange, int maxRange) : minRange(minRange), maxRange(maxRange) {}
-    };
+  virtual int required_rank() const;
 
-// TODO: make an unbreakable weapon type.
-    struct Weapon : public Equipable, Consumable {
-        const WeaponType type;
-        const int might;
-        const int weight;
-        const int accuracy;
-        const bool isMagic;
-        int durability;
-        const MovementType effectiveness;
-        const int requiredRank;
-    };
+ protected:
+  const int min_range_, max_range_;
+  const int required_rank_;
+  std::unique_ptr<Durability> durability_;
 
-/// Special instance of @class{Weapon} that features unlimited durability.
-    class UnbreakableWeapon : Weapon {
-    };
+  Equipable(int min_range, int max_range, int required_rank, Durability* durability);
 
-    struct Staff : public Equipable {
-        const int requiredRank;
-        // const std::function<int(Unit)> healingFormula;
-    };
+  Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses);
+
+  Equipable(int min_range, int max_range, int required_rank, Durability* durability, CoreStatSpread bonuses, std::function<void(Unit&)> on_use)
+    : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(durability) {}
+};
+
+class Weapon : public Equipable {
+ public:
+  WeaponType type() const;
+  int might() const;
+  int weight() const;
+  int accuracy() const;
+  int critical() const;
+  bool is_magic() const;
+  MovementType effectiveness() const;
+
+  /**
+   * Create a 1 range weapon.
+   */
+  Weapon(WeaponType, MovementType, int, int, int, int, int, bool);
+
+  /**
+   * Construct a new weapon with a custom range.
+   */
+  Weapon(WeaponType, MovementType, int, int, int, int, int, int, int, bool);
+
+ private:
+  WeaponType type_;
+  MovementType effectiveness_;
+  int might_;
+  int weight_;
+  int accuracy_;
+  int critical_;
+  int required_rank_;
+  bool is_magic_;
+};
+
+/**
+ * Special case of Consumable with unlimited durability.
+ */
+class Unbreakable : public Durability {
+ public:
+  int remaining_durability() final;
+
+  int max_durability() final;
+
+  void reduce_durability() final;
+
+  void reduce_durability(int amount) final;
+
+  bool is_broken() final;
+};
+
+class Staff : public Equipable {
+ public:
+  Staff(int min_range, int max_range, int required_rank, Durability* durability, std::function<int(Unit)> healing_formula)
+    : Equipable(min_range, max_range, required_rank, durability), healing_formula_(std::move(healing_formula)) {};
+
+ private:
+  const std::function<int(Unit)> healing_formula_;
+};
 
 }
 
