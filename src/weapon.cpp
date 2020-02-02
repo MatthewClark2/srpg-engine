@@ -9,7 +9,7 @@ namespace srpg {
 
 static void nop(Unit& _u) {}
 
-InventoryItem::InventoryItem(const CoreStatSpread& bonuses, const std::function<void(Unit&)>& on_use) {
+InventoryItem::InventoryItem(const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use) {
 
 }
 

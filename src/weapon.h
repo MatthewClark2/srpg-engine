@@ -25,6 +25,7 @@ enum class WeaponType {
   Sword = 0x08,
   Stone = 0x10,
   Staff = 0x20,
+  None = 0x40,
 };
 
 class Durability {
@@ -44,7 +45,7 @@ class Durability {
 
 class InventoryItem {
  public:
-  InventoryItem(const CoreStatSpread& bonuses, const std::function<void(Unit&)>& on_use);
+  InventoryItem(const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use);
 
   CoreStatSpread stat_bonuses();
 
@@ -73,7 +74,7 @@ class Equipable : public InventoryItem {
 
   Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability,
             const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use)
-      : InventoryItem(bonuses, std::move(on_use)), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(std::move(durability)) {}
+      : InventoryItem(bonuses, on_use), min_range_(min_range), max_range_(max_range), required_rank_(required_rank), durability_(std::move(durability)) {}
 
  private:
   const int min_range_, max_range_;

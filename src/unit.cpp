@@ -94,11 +94,11 @@ void Unit::buff(CoreStatSpread mod) {
 
 }
 
-Equipable* Unit::equipped_item() {
+Weapon* Unit::equipped_weapon() {
   return nullptr;
 }
 
-const Equipable* Unit::equipped_item() const {
+const Weapon* Unit::equipped_weapon() const {
   return nullptr;
 }
 
@@ -110,7 +110,7 @@ bool Unit::can_equip() const {
   return false;
 }
 
-bool Unit::can_equip(srpg::InventoryItem& item) const {
+bool Unit::can_equip(const Weapon& weapon) const {
   return false;
 }
 

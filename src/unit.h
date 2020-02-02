@@ -87,7 +87,7 @@ class Unit {
   /**
    * Determine whether or not the unit can equip the provided item without actually doing so.
    */
-  bool can_equip(InventoryItem& item) const;
+  bool can_equip(const Weapon& weapon) const;
 
   /**
    * Determines whether or not the given attributes form a subset of the unit's own attributes.
@@ -105,9 +105,9 @@ class Unit {
 
   const InventoryItem* held_item() const;
 
-  Equipable* equipped_item();
+  Weapon* equipped_weapon();
 
-  const Equipable* equipped_item() const;
+  const Weapon* equipped_weapon() const;
 
   /**
    * Take the item currently held by the unit. Returns nullptr if the unit is holding nothing.

@@ -159,12 +159,12 @@ BOOST_AUTO_TEST_CASE(equipping_a_non_equippable_item_fails) {
   x.give_item(potion);
 
   // Ensure that it doesn't equip on a give operation.
-  BOOST_CHECK(nullptr == x.equipped_item());
+  BOOST_CHECK(nullptr == x.equipped_weapon());
 
   // Ensure that the item may not be manually equipped.
   BOOST_CHECK(! x.equip());
 
-  BOOST_CHECK(nullptr == x.equipped_item());
+  BOOST_CHECK(nullptr == x.equipped_weapon());
 
   BOOST_REQUIRE(nullptr != x.held_item());
 }
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(able_to_equip_an_eqiupable_item) {
   x.give_item(w);
 
   BOOST_CHECK(nullptr != x.held_item());
-  BOOST_CHECK(nullptr == x.equipped_item());
+  BOOST_CHECK(nullptr == x.equipped_weapon());
   BOOST_CHECK(!x.is_equipped());
   BOOST_CHECK(x.equip());
   BOOST_CHECK(x.is_equipped());
