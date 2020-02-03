@@ -13,19 +13,34 @@ UnitAttribute operator|(UnitAttribute a, UnitAttribute b) {
 }
 
 UnitAttribute operator&(UnitAttribute a, UnitAttribute b) {
-  return UnitAttribute::None;
+  return UnitAttribute(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
 }
 
 CoreStatSpread CoreStatSpread::operator+(const CoreStatSpread& rhs) const {
-  return CoreStatSpread();
+  return CoreStatSpread(
+      hp + rhs.hp,
+      atk + rhs.atk,
+      def + rhs.def,
+      res + rhs.res,
+      luk + rhs.luk,
+      skl + rhs.skl,
+      spd + rhs.spd
+  );
 }
 
 bool CoreStatSpread::operator==(const CoreStatSpread& rhs) const {
-  return false;
+  return hp == rhs.hp &&
+         atk == rhs.atk &&
+         def == rhs.def &&
+         res == rhs.res &&
+         luk == rhs.luk &&
+         skl == rhs.skl &&
+         spd == rhs.spd;
 }
 
-CoreStatSpread::CoreStatSpread(const CoreStatSpread& spread) {
-
+CoreStatSpread::CoreStatSpread(const CoreStatSpread& spread) : CoreStatSpread(spread.hp, spread.atk, spread.def,
+                                                                              spread.res, spread.luk, spread.skl,
+                                                                              spread.spd) {
 }
 
 }

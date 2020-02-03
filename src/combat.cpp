@@ -9,7 +9,7 @@ namespace srpg {
 bool can_engage(const Unit& unit, int range) {
   bool can_perform_combat = unit.clazz().usable_weapon_types != WeaponType::None;
 
-  std::tuple<int, int> combat_range = unit.equipped_weapon()->get_range();
+  std::tuple<int, int> combat_range = unit.equipped_weapon().value().get().get_range();
   bool can_attack_at_range = std::get<0>(combat_range) <= range && std::get<1>(combat_range) >= range;
 
   return can_perform_combat && can_attack_at_range;

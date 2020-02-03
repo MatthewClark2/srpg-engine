@@ -10,18 +10,20 @@ using namespace srpg;
 
 struct Globals {
   Globals()
-    : mercenary(CoreStatSpread(), MovementType::Infantry, UnitAttribute::None, WeaponType::Sword),
-      myrmidon(myrmidon_bonuses, MovementType::Infantry, UnitAttribute::None, WeaponType::Sword),
-      potion(CoreStatSpread(), [](Unit& u) {u.offset_hp(10); }) {
-    myrmidon_bonuses = CoreStatSpread(3, 2, 1, 0, 1, 2, 3);
+      : mercenary(CoreStatSpread(), MovementType::Infantry, UnitAttribute::None, WeaponType::Sword),
+      myrmidon(CoreStatSpread(3, 2, 1, 0, 1, 2, 3), MovementType::Infantry, UnitAttribute::None, WeaponType::Sword) {
+    myrmidon_bonuses = myrmidon.stat_bonuses;
     merc_bases = CoreStatSpread(20, 7, 4, 0, 0, 5, 9);
+  }
+
+  static std::unique_ptr<InventoryItem> get_potion() {
+    return std::make_unique<InventoryItem>(CoreStatSpread(), [](Unit& u) { u.offset_hp(10); });
   }
 
   CoreStatSpread myrmidon_bonuses;
   CoreStatSpread merc_bases;
   UnitClass mercenary;
   UnitClass myrmidon;
-  InventoryItem potion;
 };
 
 BOOST_FIXTURE_TEST_SUITE(unit, Globals)
@@ -33,9 +35,10 @@ BOOST_AUTO_TEST_CASE(attributes) {
   BOOST_CHECK(x.has_attributes(UnitAttribute::Winged));
   BOOST_CHECK(x.has_attributes(UnitAttribute::Draconic | UnitAttribute::Winged));
 
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Beastial));
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Armored));
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Draconic | UnitAttribute::Beastial));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Beastial));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Armored));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Draconic | UnitAttribute::Beastial));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Draconic | UnitAttribute::Winged | UnitAttribute::Beastial));
 }
 
 BOOST_AUTO_TEST_CASE(null_attributes) {
@@ -43,10 +46,10 @@ BOOST_AUTO_TEST_CASE(null_attributes) {
 
   BOOST_CHECK(x.has_attributes(UnitAttribute::None));
 
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Draconic));
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Winged));
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Beastial));
-  BOOST_CHECK(! x.has_attributes(UnitAttribute::Armored));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Draconic));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Winged));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Beastial));
+  BOOST_CHECK(!x.has_attributes(UnitAttribute::Armored));
 }
 
 BOOST_AUTO_TEST_CASE(stat_minimums) {
@@ -94,20 +97,20 @@ BOOST_AUTO_TEST_CASE(hp_restoration) {
 BOOST_AUTO_TEST_CASE(no_item_by_default) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 4);
 
-  BOOST_CHECK(nullptr == x.held_item());
+  BOOST_CHECK(!x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(granting_an_item) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 4);
-  x.give_item(potion);
+  x.give_item(get_potion());
 
   // Both f and potion should be invalid.
-  BOOST_REQUIRE(nullptr != x.held_item());
+  BOOST_REQUIRE(x.held_item());
 
   // As a result, the result must be checked independently.
   x.offset_hp(-15);
 
-  x.held_item()->on_use(x);
+  x.held_item().value().get().on_use(x);
 
   // I could check for reduced durability here, but have decided to put that off with related tests.
 
@@ -123,14 +126,14 @@ BOOST_AUTO_TEST_CASE(autoleveling) {
   bool failed = false;
   x.give_exp(EXP_PER_LEVEL, failed);
 
-  BOOST_REQUIRE(! failed);
+  BOOST_REQUIRE(!failed);
   BOOST_CHECK_EQUAL(2, x.level());
 
   // No growths are high enough to level anything yet.
   BOOST_CHECK(merc_bases == x.stats());
 
   x.give_exp(EXP_PER_LEVEL, failed);
-  BOOST_REQUIRE(! failed);
+  BOOST_REQUIRE(!failed);
   BOOST_CHECK_EQUAL(3, x.level());
 
   BOOST_CHECK(merc_bases + CoreStatSpread(1, 0, 1, 1, 0, 1, 1) == x.stats());
@@ -139,44 +142,46 @@ BOOST_AUTO_TEST_CASE(autoleveling) {
 BOOST_AUTO_TEST_CASE(unequipped_by_default) {
   Unit x(merc_bases, CoreStatSpread(90, 45, 50, 50, 45, 50, 50), UnitAttribute::None, mercenary, 8);
 
-  BOOST_CHECK(! x.is_equipped());
-  BOOST_CHECK(nullptr == x.held_item());
+  BOOST_CHECK(!x.is_equipped());
+  BOOST_CHECK(!x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(equip_fails_when_item_not_present) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
 
-  BOOST_REQUIRE(nullptr == x.held_item());
+  BOOST_REQUIRE(!x.held_item());
 
-  BOOST_CHECK(! x.equip());
-  BOOST_REQUIRE(nullptr == x.held_item());
+  BOOST_CHECK(!x.equip());
+  BOOST_REQUIRE(!x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(equipping_a_non_equippable_item_fails) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
 
   // Note that the potion is not an equipable item, although it may be held and used.
-  x.give_item(potion);
+  x.give_item(get_potion());
 
   // Ensure that it doesn't equip on a give operation.
-  BOOST_CHECK(nullptr == x.equipped_weapon());
+  BOOST_CHECK(!x.equipped_weapon());
 
   // Ensure that the item may not be manually equipped.
-  BOOST_CHECK(! x.equip());
+  BOOST_CHECK(!x.equip());
 
-  BOOST_CHECK(nullptr == x.equipped_weapon());
+  BOOST_CHECK(!x.equipped_weapon());
 
-  BOOST_REQUIRE(nullptr != x.held_item());
+  BOOST_REQUIRE(x.held_item());
 }
 
 BOOST_AUTO_TEST_CASE(able_to_equip_an_eqiupable_item) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
-  Weapon w(WeaponType::Sword, UnitAttribute::None, 1, 1, 1, 1, 1, false);
+  auto w = std::make_unique<Weapon>(WeaponType::Sword, UnitAttribute::None, 1, 1, 1, 1, 1, false);
 
-  x.give_item(w);
+  // TODO(matthew-c21): w seems to be getting sliced, and I'm not entirely sure where.
+  x.give_item(std::move(w));
+  // x.give_item(std::move(w));
 
-  BOOST_CHECK(nullptr != x.held_item());
-  BOOST_CHECK(nullptr == x.equipped_weapon());
+  BOOST_CHECK(x.held_item());
+  BOOST_CHECK(!x.equipped_weapon());
   BOOST_CHECK(!x.is_equipped());
   BOOST_CHECK(x.equip());
   BOOST_CHECK(x.is_equipped());
@@ -187,19 +192,19 @@ BOOST_AUTO_TEST_CASE(able_to_equip_an_eqiupable_item) {
 BOOST_AUTO_TEST_CASE(units_die_at_zero_hp) {
   Unit x(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 8);
 
-  BOOST_REQUIRE(! x.dead());
+  BOOST_REQUIRE(!x.dead());
 
   x.offset_hp(-merc_bases.hp / 2);
 
-  BOOST_CHECK(! x.dead());
+  BOOST_CHECK(!x.dead());
 
-  x.offset_hp(-merc_bases.hp / 2 + 1);
+  x.offset_hp(-merc_bases.hp / 2 - 1);
 
   BOOST_CHECK(x.dead());
 }
 
 BOOST_AUTO_TEST_CASE(stats_correct_after_class_bonus) {
-  Unit merc1(CoreStatSpread(20, 7, 4, 0, 0, 5, 9), CoreStatSpread(), UnitAttribute::None, mercenary, 3);
+  Unit merc1(merc_bases, CoreStatSpread(), UnitAttribute::None, mercenary, 3);
   Unit merc2(merc_bases, CoreStatSpread(), UnitAttribute::None, myrmidon, 3);
 
   BOOST_CHECK(merc_bases == merc1.stats());

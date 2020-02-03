@@ -25,8 +25,12 @@ enum class WeaponType {
   Sword = 0x08,
   Stone = 0x10,
   Staff = 0x20,
-  None = 0x40,
+  None = 0x00,
 };
+
+WeaponType operator|(WeaponType left, WeaponType right);
+
+WeaponType operator&(WeaponType left, WeaponType right);
 
 class Durability {
  public:
@@ -45,9 +49,15 @@ class Durability {
 
 class InventoryItem {
  public:
-  InventoryItem(const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use);
+  InventoryItem(const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use) : stat_bonuses_(bonuses), on_use_(std::move(on_use)) {}
 
-  CoreStatSpread stat_bonuses();
+  CoreStatSpread stat_bonuses() const;
+
+  /**
+   *
+   * @return
+   */
+  virtual bool equipable() const;
 
   virtual void on_use(Unit& target);
 
@@ -65,6 +75,8 @@ class Equipable : public InventoryItem {
   virtual Durability& durability();
 
   virtual int required_rank() const;
+
+  bool equipable() const override;
 
  protected:
   Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability);

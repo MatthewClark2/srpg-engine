@@ -14,114 +14,176 @@
 namespace srpg {
 
 Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-    const UnitClass& clazz, int base_weapon_rank)
+           const UnitClass& clazz, int base_weapon_rank)
     : Unit(base_stats, growths, attributes, clazz, base_weapon_rank, 0, 1) {
 }
 
 int Unit::rnk() const {
-  return 0;
+  return rnk_;
 }
 
 int Unit::exp() const {
-  return 0;
+  return exp_;
 }
 
 int Unit::level() const {
-  return 0;
+  return levels_gained_ + base_level_;
 }
 
 bool Unit::is_equipped() const {
-  return false;
+  return equipped_;
 }
 
 void Unit::unequip() {
-
+  equipped_ = false;
 }
 
 bool Unit::equip() {
-  return false;
+  return equipped_ = can_equip();
 }
 
 bool Unit::has_attributes(UnitAttribute attributes) const {
-  return false;
+  if (this->attributes() == UnitAttribute::None && attributes == UnitAttribute::None) {
+    return true;
+  }
+
+  return (this->attributes() == attributes) || (this->attributes() & attributes) != UnitAttribute::None;
 }
 
 bool Unit::give_exp(int exp) {
-  return false;
+  bool x;
+
+  return give_exp(exp, x);
 }
 
 bool Unit::give_exp(int exp, bool& failed) {
-  return false;
+  if (level() == MAX_LEVEL) {
+    failed = true;
+    return false;
+  }
+
+  exp = std::min(exp, EXP_PER_LEVEL);
+  bool levelled = EXP_PER_LEVEL - (exp + exp_) > 0;
+
+  exp_ = (exp + exp_) % EXP_PER_LEVEL;
+
+  if (levelled) {
+    ++levels_gained_;
+
+    if (level() == MAX_LEVEL) {
+      exp_ = 0;
+    }
+  }
+
+  return levelled;
 }
 
 CoreStatSpread Unit::stats() const {
-  return CoreStatSpread(0, 0, 0, 0, 0, 0, 0);
+  auto effective_stats =
+      stats_ + clazz_.stat_bonuses + (held_item().has_value() ? held_item()->get().stat_bonuses() : CoreStatSpread()) + buffs_;
+
+  return CoreStatSpread(std::max(1, effective_stats.hp),
+                        std::max(0, effective_stats.atk),
+                        std::max(0, effective_stats.def),
+                        std::max(0, effective_stats.res),
+                        std::max(0, effective_stats.luk),
+                        std::max(0, effective_stats.skl),
+                        std::max(0, effective_stats.spd));
 }
 
 UnitAttribute Unit::attributes() const {
-  return UnitAttribute::Beastial;
+  return base_attributes_ | clazz_.class_attributes;
 }
 
 const UnitClass& Unit::clazz() const {
-  throw std::exception();
+  return clazz_;
 }
 
-InventoryItem* Unit::held_item() {
-  return nullptr;
+std::optional<std::reference_wrapper<InventoryItem>> Unit::held_item() {
+  if (inventory_) {
+    return std::make_optional(std::ref<InventoryItem>(*inventory_));
+  }
+
+  return std::nullopt;
 }
 
-const InventoryItem* Unit::held_item() const {
-  return nullptr;
+std::optional<std::reference_wrapper<const InventoryItem>> Unit::held_item() const {
+  if (inventory_) {
+    return std::make_optional(std::ref<const InventoryItem>(*inventory_));
+  }
+
+  return std::nullopt;
 }
 
 std::unique_ptr<InventoryItem> Unit::drop_item(bool& successful) {
+  successful = static_cast<bool>(inventory_);
+
+  if (successful) {
+    return std::move(inventory_);
+  }
+
   return nullptr;
 }
 
-void Unit::give_item(InventoryItem& item) {
-
+void Unit::give_item(std::unique_ptr<InventoryItem>&& item) {
+  inventory_ = std::move(item);
 }
 
 bool Unit::dead() const {
-  return false;
+  return remaining_hp_ <= 0;
 }
 
 void Unit::offset_hp(int amount) {
+  auto max_hp = stats_.hp;
 
+  remaining_hp_ = std::min(-amount > remaining_hp_ ? 0 : remaining_hp_ + amount, max_hp);
 }
 
 void Unit::buff(CoreStatSpread mod) {
-
+  // TODO(matthew-c21): Debuffs should probably be capped.
+  buffs_ = buffs_ + mod;
 }
 
-Weapon* Unit::equipped_weapon() {
-  return nullptr;
+std::optional<std::reference_wrapper<Weapon>> Unit::equipped_weapon() {
+  if (is_equipped()) {
+    return std::make_optional(std::ref<Weapon>(dynamic_cast<Weapon&>(*inventory_)));
+  }
+  return std::nullopt;
 }
 
-const Weapon* Unit::equipped_weapon() const {
-  return nullptr;
+std::optional<std::reference_wrapper<const Weapon>> Unit::equipped_weapon() const {
+  if (is_equipped()) {
+    return std::make_optional(std::ref<const Weapon>(dynamic_cast<Weapon&>(*inventory_)));
+  }
+
+  return std::nullopt;
 }
 
 int Unit::remaining_hp() const {
-  return 0;
+  return remaining_hp_;
 }
 
 bool Unit::can_equip() const {
+  // TODO(matthew-c21): This implementation is bad and it should feel bad.
+  if (inventory_ && inventory_->equipable()) {
+    return can_equip(*dynamic_cast<Weapon*>(inventory_.get()));
+  }
+
   return false;
 }
 
 bool Unit::can_equip(const Weapon& weapon) const {
-  return false;
+  return (weapon.required_rank() <= rnk_) && ((clazz_.usable_weapon_types & weapon.type()) != WeaponType::None);
 }
 
 Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-    const UnitClass& clazz, int base_weapon_rank, int base_exp) : Unit(base_stats, growths, attributes, clazz,
-        base_weapon_rank, base_exp, 1) {
+           const UnitClass& clazz, int base_weapon_rank, int base_exp) : Unit(base_stats, growths, attributes, clazz,
+                                                                              base_weapon_rank, base_exp, 1) {
 
 }
 
 Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-    const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level)
+           const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level)
     : stats_(base_stats), growths_(growths), base_attributes_(attributes), clazz_(clazz), rnk_(base_weapon_rank),
     exp_(base_exp), base_level_(base_level), levels_gained_(0) {
   remaining_hp_ = base_stats.hp;

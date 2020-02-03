@@ -9,28 +9,36 @@ namespace srpg {
 
 static void nop(Unit& _u) {}
 
-InventoryItem::InventoryItem(const CoreStatSpread& bonuses, std::function<void(Unit&)> on_use) {
-
+WeaponType operator|(WeaponType left, WeaponType right) {
+  return WeaponType(static_cast<unsigned int>(left) | static_cast<unsigned int>(right));
 }
 
-CoreStatSpread InventoryItem::stat_bonuses() {
-  return CoreStatSpread();
+WeaponType operator&(WeaponType left, WeaponType right) {
+  return WeaponType(static_cast<unsigned int>(left) & static_cast<unsigned int>(right));
+}
+
+CoreStatSpread InventoryItem::stat_bonuses() const {
+  return stat_bonuses_;
 }
 
 void InventoryItem::on_use(Unit& target) {
+  on_use_(target);
+}
 
+bool InventoryItem::equipable() const {
+  return false;
 }
 
 std::tuple<int, int> Equipable::get_range() const {
-  return std::tuple<int, int>();
+  return std::tuple<int, int>(min_range_, max_range_);
 }
 
 Durability& Equipable::durability() {
-  throw std::exception();
+  return *durability_;
 }
 
 int Equipable::required_rank() const {
-  return 0;
+  return required_rank_;
 }
 
 Equipable::Equipable(int min_range, int max_range, int required_rank, std::unique_ptr<Durability> durability)
@@ -44,32 +52,36 @@ Equipable::Equipable(int min_range, int max_range, int required_rank, std::uniqu
 
 }
 
+bool Equipable::equipable() const {
+  return true;
+}
+
 WeaponType Weapon::type() const {
-  return WeaponType::Lance;
+  return type_;
 }
 
 int Weapon::might() const {
-  return 0;
+  return might_;
 }
 
 int Weapon::weight() const {
-  return 0;
+  return weight_;
 }
 
 int Weapon::accuracy() const {
-  return 0;
+  return accuracy_;
 }
 
 int Weapon::critical() const {
-  return 0;
+  return critical_;
 }
 
 bool Weapon::is_magic() const {
-  return false;
+  return is_magic_;
 }
 
 UnitAttribute Weapon::effectiveness() const {
-  return UnitAttribute::Beastial;
+  return effectiveness_;
 }
 
 Weapon::Weapon(WeaponType type, UnitAttribute effectiveness, int might, int weight,
@@ -101,20 +113,16 @@ Unbreakable::Unbreakable() {
 }
 
 int Unbreakable::remaining_durability() {
-  return 0;
+  return INFINITE_DURABILITY;
 }
 
 int Unbreakable::max_durability() {
-  return 0;
+  return INFINITE_DURABILITY;
 }
 
-void Unbreakable::reduce_durability() {
+void Unbreakable::reduce_durability() {}
 
-}
-
-void Unbreakable::reduce_durability(int amount) {
-
-}
+void Unbreakable::reduce_durability(int amount) {}
 
 bool Unbreakable::is_broken() {
   return false;

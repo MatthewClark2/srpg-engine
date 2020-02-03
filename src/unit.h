@@ -101,13 +101,13 @@ class Unit {
    * moved by a trade or discard action.
    * @return a pointer to this unit's held item, or nullptr of one isn't present.
    */
-  InventoryItem* held_item();
+  std::optional<std::reference_wrapper<InventoryItem>> held_item();
 
-  const InventoryItem* held_item() const;
+  std::optional<std::reference_wrapper<const InventoryItem>> held_item() const;
 
-  Weapon* equipped_weapon();
+  std::optional<std::reference_wrapper<Weapon>> equipped_weapon();
 
-  const Weapon* equipped_weapon() const;
+  std::optional<std::reference_wrapper<const Weapon>> equipped_weapon() const;
 
   /**
    * Take the item currently held by the unit. Returns nullptr if the unit is holding nothing.
@@ -120,7 +120,7 @@ class Unit {
    * Give an item to the unit. If the unit is already holding an item, it will be discarded and replaced.
    * @param item the new item that the unit should hold.
    */
-  void give_item(InventoryItem& item);
+  void give_item(std::unique_ptr<InventoryItem>&& item);
 
   /**
    * Similar to #giveExperience(int, bool), but discards the output parameter.
@@ -195,7 +195,7 @@ class Unit {
 
   // I'd like an inventory system like Gaiden since it's both easier to handle, and adds a new layer of inventory
   // management not found in most of the games.
-  std::unique_ptr<Equipable> inventory_;
+  std::unique_ptr<InventoryItem> inventory_;
 
   bool equipped_;
 };
