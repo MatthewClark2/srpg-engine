@@ -47,7 +47,7 @@ bool Unit::has_attributes(UnitAttribute attributes) const {
     return true;
   }
 
-  return (this->attributes() == attributes) || (this->attributes() & attributes) != UnitAttribute::None;
+  return (~this->attributes() & attributes) == UnitAttribute::None;
 }
 
 bool Unit::give_exp(int exp) {
@@ -63,11 +63,11 @@ bool Unit::give_exp(int exp, bool& failed) {
   }
 
   exp = std::min(exp, EXP_PER_LEVEL);
-  bool levelled = EXP_PER_LEVEL - (exp + exp_) > 0;
+  bool leveled = EXP_PER_LEVEL - (exp + exp_) <= 0;
 
   exp_ = (exp + exp_) % EXP_PER_LEVEL;
 
-  if (levelled) {
+  if (leveled) {
     ++levels_gained_;
 
     if (level() == MAX_LEVEL) {
@@ -75,20 +75,27 @@ bool Unit::give_exp(int exp, bool& failed) {
     }
   }
 
-  return levelled;
+  return leveled;
 }
 
 CoreStatSpread Unit::stats() const {
+  // Take the sum of base stats + buffs + growth + item bonuses for raw effective stats.
   auto effective_stats =
-      stats_ + clazz_.stat_bonuses + (held_item().has_value() ? held_item()->get().stat_bonuses() : CoreStatSpread()) + buffs_;
+      stats_ + clazz_.stat_bonuses + buffs_ + growths() +
+      (held_item().has_value() ? held_item()->get().stat_bonuses() : CoreStatSpread());
 
-  return CoreStatSpread(std::max(1, effective_stats.hp),
-                        std::max(0, effective_stats.atk),
-                        std::max(0, effective_stats.def),
-                        std::max(0, effective_stats.res),
-                        std::max(0, effective_stats.luk),
-                        std::max(0, effective_stats.skl),
-                        std::max(0, effective_stats.spd));
+  // Ensure that no stat falls below the baseline.
+  effective_stats = CoreStatSpread(std::max(1, effective_stats.hp),
+                                   std::max(0, effective_stats.atk),
+                                   std::max(0, effective_stats.def),
+                                   std::max(0, effective_stats.res),
+                                   std::max(0, effective_stats.luk),
+                                   std::max(0, effective_stats.skl),
+                                   std::max(0, effective_stats.spd));
+
+  // If stat caps were a thing, they would be checked here.
+
+  return effective_stats;
 }
 
 UnitAttribute Unit::attributes() const {
@@ -187,6 +194,16 @@ Unit::Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, Unit
     : stats_(base_stats), growths_(growths), base_attributes_(attributes), clazz_(clazz), rnk_(base_weapon_rank),
     exp_(base_exp), base_level_(base_level), levels_gained_(0) {
   remaining_hp_ = base_stats.hp;
+}
+
+CoreStatSpread Unit::growths() const {
+  return CoreStatSpread(growths_.hp * levels_gained_ / 100,
+                        growths_.atk * levels_gained_ / 100,
+                        growths_.def * levels_gained_ / 100,
+                        growths_.res * levels_gained_ / 100,
+                        growths_.luk * levels_gained_ / 100,
+                        growths_.skl * levels_gained_ / 100,
+                        growths_.spd * levels_gained_ / 100);
 }
 
 UnitClass::UnitClass(const CoreStatSpread& stats, MovementType mov, UnitAttribute attrs, WeaponType weps)

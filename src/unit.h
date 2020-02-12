@@ -181,6 +181,8 @@ class Unit {
   // std::optional<Unit> clazz(const UnitClass& new_class);
 
  private:
+  CoreStatSpread growths() const;
+
   // Stats are just base stats
   CoreStatSpread stats_;
   CoreStatSpread buffs_;

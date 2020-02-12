@@ -16,6 +16,10 @@ UnitAttribute operator&(UnitAttribute a, UnitAttribute b) {
   return UnitAttribute(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
 }
 
+UnitAttribute operator~(UnitAttribute a) {
+  return UnitAttribute(~static_cast<unsigned int>(a));
+}
+
 CoreStatSpread CoreStatSpread::operator+(const CoreStatSpread& rhs) const {
   return CoreStatSpread(
       hp + rhs.hp,
