@@ -8,6 +8,19 @@ extern "C" {
 #include <SDL_image.h>
 }
 
+SDL_Surface* optimize(SDL_Surface* window_surface, SDL_Surface* in) {
+  SDL_Surface* opt = SDL_ConvertSurface(in, window_surface->format, 0);
+
+  if (opt == nullptr) {
+    std::cerr << "Unable to optimize surface." << std::endl;
+    std::exit(-5);
+  }
+
+  SDL_FreeSurface(in);
+
+  return opt;
+}
+
 SDL_Window* init() {
   SDL_Window* window = nullptr;
 

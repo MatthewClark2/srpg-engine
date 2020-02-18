@@ -12,4 +12,6 @@ int stay_open();
 
 int swap_images();
 
+int optimized_images();
+
 #endif //SRPG_ENGINE_EXERCISES_H
