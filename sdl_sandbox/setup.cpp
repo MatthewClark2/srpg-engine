@@ -125,13 +125,16 @@ Texture::Texture(GraphicalContext& ctx, SDL_Surface* surface) : width_(surface->
 }
 
 void Texture::draw(GraphicalContext& ctx, int x, int y) {
-  SDL_Rect render_quad = {x, y, width_, height_};
-
-  SDL_RenderCopy(ctx.renderer, texture_, nullptr, &render_quad);
+  SDL_Rect quad = {x, y, width_, height_};
+  draw_scaled(ctx, quad);
 }
 
 Texture::~Texture() {
   if (texture_ != nullptr) {
     SDL_DestroyTexture(texture_);
   }
+}
+
+void Texture::draw_scaled(GraphicalContext& ctx, SDL_Rect& render_quad) {
+  SDL_RenderCopy(ctx.renderer, texture_, nullptr, &render_quad);
 }

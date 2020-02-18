@@ -8,6 +8,7 @@ int main() {
   // optimized_images();
   // texturing();
   // rectangles();
-  viewports();
+  // viewports();
+  color_keying_and_layered_textures();
 }
 

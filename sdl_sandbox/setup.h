@@ -24,15 +24,17 @@ class Texture {
   const int height_;
 
   Texture(GraphicalContext& ctx, const std::string& file);
+  Texture(GraphicalContext& ctx, SDL_Surface* surface);
 
   Texture(const Texture& o) = delete;
 
   void draw(GraphicalContext& ctx, int x, int y);
 
+  void draw_scaled(GraphicalContext& ctx, SDL_Rect& opts);
+
   ~Texture();
 
  private:
-  Texture(GraphicalContext& ctx, SDL_Surface* surface);
   SDL_Texture* texture_;
 };
 

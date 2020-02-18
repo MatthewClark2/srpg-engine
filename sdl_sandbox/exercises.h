@@ -20,4 +20,6 @@ int rectangles();
 
 int viewports();
 
+int color_keying_and_layered_textures();
+
 #endif //SRPG_ENGINE_EXERCISES_H
