@@ -16,4 +16,6 @@ int optimized_images();
 
 int texturing();
 
+int rectangles();
+
 #endif //SRPG_ENGINE_EXERCISES_H

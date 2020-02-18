@@ -6,6 +6,7 @@ int main() {
   // stay_open();
   // swap_images();
   // optimized_images();
-  texturing();
+  // texturing();
+  rectangles();
 }
 

@@ -87,3 +87,26 @@ void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces) {
   IMG_Quit();
   SDL_Quit();
 }
+
+SDL_Renderer* get_renderer(SDL_Window* window) {
+  auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  if (renderer == nullptr) {
+    std::cerr << "Unable to create renderer for window." << std::endl;
+    std::exit(-9);
+  }
+
+  return renderer;
+}
+
+GraphicalContext::GraphicalContext() {
+  window = init();
+  renderer = get_renderer(window);
+  window_surface = SDL_GetWindowSurface(window);
+}
+
+GraphicalContext::~GraphicalContext() {
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  IMG_Quit();
+  SDL_Quit();
+}
