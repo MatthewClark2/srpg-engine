@@ -18,6 +18,7 @@ Feel free to modify this codebase or submit pull requests to the official
 
 ## Outstanding TODOs
 
+* Split into `engine` and `lua` submodules.
 * Finish map API
 * Add rendering information to Units, Items, and Maps
 * Unit test weapon and combat functionality
