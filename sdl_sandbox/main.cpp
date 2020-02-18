@@ -2,6 +2,7 @@
 
 int main() {
   // white_screen_2_secs();
-  render_image_to_screen();
+  // render_image_to_screen();
+  stay_open();
 }
 

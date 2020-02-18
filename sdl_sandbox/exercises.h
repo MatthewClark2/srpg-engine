@@ -8,4 +8,6 @@ int white_screen_2_secs();
 
 int render_image_to_screen();
 
+int stay_open();
+
 #endif //SRPG_ENGINE_EXERCISES_H
