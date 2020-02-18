@@ -18,4 +18,6 @@ int texturing();
 
 int rectangles();
 
+int viewports();
+
 #endif //SRPG_ENGINE_EXERCISES_H

@@ -1,7 +1,7 @@
 # SDL Sandbox
 
 This folder contains a series of small functions used for testing the functionality of SDL2. Most
-of the code is based on [LazyFoo's SDL tutorial](http://lazyfoo.net/tutorials/SDL/index.php)
+of the code is based on [LazyFoo's SDL tutorial](http://lazyfoo.net/tutorials/SDL/)
 
 ## File Overview
 
@@ -16,3 +16,10 @@ of the code is based on [LazyFoo's SDL tutorial](http://lazyfoo.net/tutorials/SD
 No matter what, there seems to be a leak of ~49kB from four contexts on my system. Since the values
 are constant and all originate from within SDL itself, I'm assuming that these are one off leaks 
 that don't affect anything and that will be reclaimed by the operating system anyway.
+
+## Notes About SDL Functions
+
+1. I'm pretty sure that setting `srcrect` and `dstrect` allows for slicing out parts of the overall 
+texture, which I need for rendering tilesets. Leaving `srcrect` as null takes the entire texture, 
+while a null `dstrect` applies the texture to the entire rendering target. The texture will be
+stretched to fit. 

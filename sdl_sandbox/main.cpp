@@ -7,6 +7,7 @@ int main() {
   // swap_images();
   // optimized_images();
   // texturing();
-  rectangles();
+  // rectangles();
+  viewports();
 }
 
