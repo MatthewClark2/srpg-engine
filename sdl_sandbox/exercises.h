@@ -14,4 +14,6 @@ int swap_images();
 
 int optimized_images();
 
+int texturing();
+
 #endif //SRPG_ENGINE_EXERCISES_H

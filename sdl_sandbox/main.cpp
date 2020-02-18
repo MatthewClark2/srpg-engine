@@ -5,6 +5,7 @@ int main() {
   // render_image_to_screen();
   // stay_open();
   // swap_images();
-  optimized_images();
+  // optimized_images();
+  texturing();
 }
 

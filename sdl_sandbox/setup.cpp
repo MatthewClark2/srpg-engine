@@ -58,6 +58,23 @@ SDL_Surface* load_media(const std::string& file) {
   return surface;
 }
 
+SDL_Texture* load_media(const std::string& file, SDL_Renderer* renderer) {
+  SDL_Texture* texture = nullptr;
+
+  SDL_Surface* loaded_surface = load_media(file);
+
+  texture = SDL_CreateTextureFromSurface(renderer, loaded_surface);
+
+  if (texture == nullptr) {
+    std::cerr << "Unable to create texture from surface." << std::endl;
+    std::exit(-9);
+  }
+
+  SDL_FreeSurface(loaded_surface);
+
+  return texture;
+}
+
 void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces) {
   for (size_t i = 0; i < n_surfaces; ++i) {
     SDL_FreeSurface(surfaces[i]);
@@ -67,5 +84,6 @@ void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces) {
   SDL_DestroyWindow(window);
 
   // Quit out.
+  IMG_Quit();
   SDL_Quit();
 }
