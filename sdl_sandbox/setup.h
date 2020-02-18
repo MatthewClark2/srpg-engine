@@ -32,6 +32,8 @@ class Texture {
 
   void draw_scaled(GraphicalContext& ctx, SDL_Rect& opts);
 
+  void draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip);
+
   ~Texture();
 
  private:

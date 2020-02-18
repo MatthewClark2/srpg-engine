@@ -9,6 +9,7 @@ int main() {
   // texturing();
   // rectangles();
   // viewports();
-  color_keying_and_layered_textures();
+  // color_keying_and_layered_textures();
+  clipped_texture();
 }
 

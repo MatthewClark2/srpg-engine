@@ -138,3 +138,8 @@ Texture::~Texture() {
 void Texture::draw_scaled(GraphicalContext& ctx, SDL_Rect& render_quad) {
   SDL_RenderCopy(ctx.renderer, texture_, nullptr, &render_quad);
 }
+
+void Texture::draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip) {
+  SDL_Rect quad = {x, y, clip.w, clip.h};
+  SDL_RenderCopy(ctx.renderer, texture_, &clip, &quad);
+}

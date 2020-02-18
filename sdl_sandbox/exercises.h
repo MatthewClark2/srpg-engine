@@ -22,4 +22,6 @@ int viewports();
 
 int color_keying_and_layered_textures();
 
+int clipped_texture();
+
 #endif //SRPG_ENGINE_EXERCISES_H
