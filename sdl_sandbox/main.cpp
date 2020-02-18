@@ -1,6 +1,7 @@
-#include "exercise1.h"
+#include "exercises.h"
 
 int main() {
-  white_screen_2_secs();
+  // white_screen_2_secs();
+  render_image_to_screen();
 }
 

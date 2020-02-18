@@ -2,12 +2,10 @@
 // Created by matthew on 2/17/20.
 //
 
-#include "exercise1.h"
+#include "exercises.h"
 #include <iostream>
 
-extern "C" {
-#include <SDL.h>
-}
+#include "sdl.h"
 
 int white_screen_2_secs() {
   SDL_Window* window = nullptr;

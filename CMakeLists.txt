@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 option(TEST_SDL OFF)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
+
 if(${TEST_SDL})
     add_subdirectory(sdl_sandbox)
 endif()
