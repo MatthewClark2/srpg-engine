@@ -21,7 +21,7 @@ int stay_open() {
     SDL_UpdateWindowSurface(window);
   }
 
-  close(window, 1, image_surface);
+  close(window, 1, &image_surface);
 
   return 0;
 }

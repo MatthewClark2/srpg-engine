@@ -13,7 +13,7 @@ int render_image_to_screen() {
 
   SDL_Delay(2'000);
 
-  close(window, 1, image_surface);
+  close(window, 1, &image_surface);
 
   return 0;
 }

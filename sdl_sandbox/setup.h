@@ -8,6 +8,6 @@ SDL_Window* init();
 
 SDL_Surface* load_media(const std::string& file);
 
-void close(SDL_Window* window, size_t n_surfaces, ...);
+void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces);
 
 #endif //SRPG_ENGINE_SETUP_H

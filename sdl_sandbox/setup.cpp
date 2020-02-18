@@ -40,15 +40,10 @@ SDL_Surface* load_media(const std::string& file) {
   return surface;
 }
 
-void close(SDL_Window* window, size_t n_surfaces, ...) {
-  va_list surfaces;
-  va_start(surfaces, n_surfaces);
-
+void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces) {
   for (size_t i = 0; i < n_surfaces; ++i) {
-    SDL_FreeSurface(va_arg(surfaces, SDL_Surface*));
+    SDL_FreeSurface(surfaces[i]);
   }
-
-  va_end(surfaces);
 
   // Destroy the window. This probably also invalidates its surface.
   SDL_DestroyWindow(window);
