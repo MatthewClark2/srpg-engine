@@ -110,3 +110,28 @@ GraphicalContext::~GraphicalContext() {
   IMG_Quit();
   SDL_Quit();
 }
+
+Texture::Texture(GraphicalContext& ctx, const std::string& file) : Texture(ctx, load_media(file)) {}
+
+Texture::Texture(GraphicalContext& ctx, SDL_Surface* surface) : width_(surface->w), height_(surface->h) {
+  texture_ = SDL_CreateTextureFromSurface(ctx.renderer, surface);
+
+  if (texture_ == nullptr) {
+    std::cerr << "Unable to create texture." << std::endl;
+    std::exit(-6);
+  }
+
+  SDL_FreeSurface(surface);
+}
+
+void Texture::draw(GraphicalContext& ctx, int x, int y) {
+  SDL_Rect render_quad = {x, y, width_, height_};
+
+  SDL_RenderCopy(ctx.renderer, texture_, nullptr, &render_quad);
+}
+
+Texture::~Texture() {
+  if (texture_ != nullptr) {
+    SDL_DestroyTexture(texture_);
+  }
+}

@@ -18,6 +18,24 @@ class GraphicalContext {
   ~GraphicalContext();
 };
 
+class Texture {
+ public:
+  const int width_;
+  const int height_;
+
+  Texture(GraphicalContext& ctx, const std::string& file);
+
+  Texture(const Texture& o) = delete;
+
+  void draw(GraphicalContext& ctx, int x, int y);
+
+  ~Texture();
+
+ private:
+  Texture(GraphicalContext& ctx, SDL_Surface* surface);
+  SDL_Texture* texture_;
+};
+
 SDL_Surface* optimize(SDL_Surface* window_surface, SDL_Surface* in);
 
 SDL_Window* init();
