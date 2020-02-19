@@ -147,3 +147,11 @@ void Texture::draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip) {
 void Texture::color(int r, int g, int b) {
   SDL_SetTextureColorMod(texture_, r, g, b);
 }
+
+void Texture::alpha(int a) {
+  SDL_SetTextureAlphaMod(texture_, a);
+}
+
+void Texture::set_blend_mode(SDL_BlendMode mode) {
+  SDL_SetTextureBlendMode(texture_, mode);
+}

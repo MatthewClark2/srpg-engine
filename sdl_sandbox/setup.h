@@ -30,6 +30,9 @@ class Texture {
 
   void color(int r, int g, int b);
 
+  void set_blend_mode(SDL_BlendMode mode);
+  void alpha(int a);
+
   void draw(GraphicalContext& ctx, int x, int y);
 
   void draw_scaled(GraphicalContext& ctx, SDL_Rect& opts);
