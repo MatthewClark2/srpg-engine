@@ -3,7 +3,7 @@
 
 #include "sdl.h"
 #include <string>
-#include <optional>
+#include <vector>
 
 class GraphicalContext {
  public:
@@ -12,6 +12,8 @@ class GraphicalContext {
   SDL_Surface* window_surface;
 
   GraphicalContext();
+
+  explicit GraphicalContext(int renderer_flags);
 
   GraphicalContext(const GraphicalContext& o) = delete;
 
@@ -27,6 +29,7 @@ class Texture {
   Texture(GraphicalContext& ctx, SDL_Surface* surface);
 
   Texture(const Texture& o) = delete;
+  Texture(Texture&& moved) noexcept;
 
   void color(int r, int g, int b);
 
@@ -45,10 +48,27 @@ class Texture {
   SDL_Texture* texture_;
 };
 
+class SpriteSheet {
+ public:
+  const int sprite_width_, sprite_height_;
+
+  SpriteSheet(Texture&& texture, int sprite_width, int sprite_height);
+
+  int n_sprites() const;
+
+  SDL_Rect operator[](size_t loc) const;
+
+  void draw(GraphicalContext& ctx, int x, int y, int idx);
+
+ private:
+  Texture t;
+  std::vector<SDL_Rect> sprites;
+};
+
 SDL_Surface* optimize(SDL_Surface* window_surface, SDL_Surface* in);
 
 SDL_Window* init();
-SDL_Renderer* get_renderer(SDL_Window* window);
+SDL_Renderer* get_renderer(SDL_Window* window, int renderer_flags);
 
 SDL_Surface* load_media(const std::string& file);
 SDL_Texture* load_media(const std::string& file, SDL_Renderer* renderer);

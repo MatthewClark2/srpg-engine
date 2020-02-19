@@ -26,4 +26,6 @@ int clipped_texture();
 
 int color_modulation();
 
+int animations_and_vsync();
+
 #endif //SRPG_ENGINE_EXERCISES_H

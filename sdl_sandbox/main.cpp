@@ -11,6 +11,7 @@ int main() {
   // viewports();
   // color_keying_and_layered_textures();
   // clipped_texture();
-  color_modulation();
+  // color_modulation();
+  animations_and_vsync();
 }
 

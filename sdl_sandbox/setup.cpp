@@ -88,8 +88,8 @@ void close(SDL_Window* window, size_t n_surfaces, SDL_Surface** surfaces) {
   SDL_Quit();
 }
 
-SDL_Renderer* get_renderer(SDL_Window* window) {
-  auto renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+SDL_Renderer* get_renderer(SDL_Window* window, int renderer_flags) {
+  auto renderer = SDL_CreateRenderer(window, -1, renderer_flags);
   if (renderer == nullptr) {
     std::cerr << "Unable to create renderer for window." << std::endl;
     std::exit(-9);
@@ -98,17 +98,19 @@ SDL_Renderer* get_renderer(SDL_Window* window) {
   return renderer;
 }
 
-GraphicalContext::GraphicalContext() {
-  window = init();
-  renderer = get_renderer(window);
-  window_surface = SDL_GetWindowSurface(window);
-}
+GraphicalContext::GraphicalContext() : GraphicalContext(SDL_RENDERER_ACCELERATED) {}
 
 GraphicalContext::~GraphicalContext() {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   IMG_Quit();
   SDL_Quit();
+}
+
+GraphicalContext::GraphicalContext(int renderer_flags) {
+  window = init();
+  renderer = get_renderer(window, renderer_flags);
+  window_surface = SDL_GetWindowSurface(window);
 }
 
 Texture::Texture(GraphicalContext& ctx, const std::string& file) : Texture(ctx, load_media(file)) {}
@@ -154,4 +156,39 @@ void Texture::alpha(int a) {
 
 void Texture::set_blend_mode(SDL_BlendMode mode) {
   SDL_SetTextureBlendMode(texture_, mode);
+}
+
+Texture::Texture(Texture&& moved) noexcept : width_(moved.width_), height_(moved.height_) {
+  texture_ = moved.texture_;
+}
+
+SpriteSheet::SpriteSheet(Texture&& texture, int sprite_width, int sprite_height) :
+    sprite_width_(sprite_width), sprite_height_(sprite_height), t(std::move(texture)) {
+  int n_sprites = (t.width_ / sprite_width) * (t.height_ / sprite_height);
+
+  int x_pos = 0, y_pos = 0;
+
+  for (int i = 0; i < n_sprites; ++i) {
+    x_pos = (i * sprite_width) % t.width_;
+    y_pos = ((i * sprite_width) / t.width_) * sprite_height;
+    sprites.push_back({x_pos, y_pos, sprite_width, sprite_height});
+  }
+}
+
+int SpriteSheet::n_sprites() const {
+  return sprites.size();
+}
+
+SDL_Rect SpriteSheet::operator[](size_t loc) const {
+  if (loc >= sprites.size()) {
+    std::cerr << "Invalid sprite index." << std::endl;
+    std::exit(-10);
+  }
+
+  return sprites[loc];
+}
+
+void SpriteSheet::draw(GraphicalContext& ctx, int x, int y, int idx) {
+  SDL_Rect r = (*this)[idx];
+  t.draw_clip(ctx, x, y, r);
 }
