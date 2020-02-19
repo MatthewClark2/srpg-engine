@@ -28,6 +28,8 @@ class Texture {
 
   Texture(const Texture& o) = delete;
 
+  void color(int r, int g, int b);
+
   void draw(GraphicalContext& ctx, int x, int y);
 
   void draw_scaled(GraphicalContext& ctx, SDL_Rect& opts);

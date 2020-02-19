@@ -24,4 +24,6 @@ int color_keying_and_layered_textures();
 
 int clipped_texture();
 
+int color_modulation();
+
 #endif //SRPG_ENGINE_EXERCISES_H

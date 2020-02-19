@@ -143,3 +143,7 @@ void Texture::draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip) {
   SDL_Rect quad = {x, y, clip.w, clip.h};
   SDL_RenderCopy(ctx.renderer, texture_, &clip, &quad);
 }
+
+void Texture::color(int r, int g, int b) {
+  SDL_SetTextureColorMod(texture_, r, g, b);
+}
