@@ -33,7 +33,7 @@ int color_keying_and_layered_textures() {
 
     SDL_Rect quad = {current_pos, HEIGHT / 2, 160, 80};
     background_texture.draw(ctx, 0, 0);
-    foreground_texture.draw_scaled(ctx, quad);
+    foreground_texture.draw(ctx, quad);
 
     SDL_RenderPresent(ctx.renderer);
 

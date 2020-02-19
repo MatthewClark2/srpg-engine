@@ -28,10 +28,10 @@ int clipped_texture() {
     SDL_SetRenderDrawColor(ctx.renderer, 0xff, 0xff, 0xff, 0xff);
     SDL_RenderClear(ctx.renderer);
 
-    sheet.draw_clip(ctx, 0, 0, clips[0]);
-    sheet.draw_clip(ctx, WIDTH - clips[1].w, 0, clips[1]);
-    sheet.draw_clip(ctx, 0, HEIGHT - clips[2].h, clips[2]);
-    sheet.draw_clip(ctx, WIDTH - clips[3].w, HEIGHT - clips[3].h, clips[3]);
+    sheet.draw(ctx, 0, 0, clips[0]);
+    sheet.draw(ctx, WIDTH - clips[1].w, 0, clips[1]);
+    sheet.draw(ctx, 0, HEIGHT - clips[2].h, clips[2]);
+    sheet.draw(ctx, WIDTH - clips[3].w, HEIGHT - clips[3].h, clips[3]);
 
     SDL_RenderPresent(ctx.renderer);
   }

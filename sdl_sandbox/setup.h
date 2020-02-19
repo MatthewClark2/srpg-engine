@@ -38,9 +38,11 @@ class Texture {
 
   void draw(GraphicalContext& ctx, int x, int y);
 
-  void draw_scaled(GraphicalContext& ctx, SDL_Rect& opts);
+  void draw(GraphicalContext& ctx, const SDL_Rect& dest);
 
-  void draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip);
+  void draw(GraphicalContext& ctx, int x, int y, const SDL_Rect& clip);
+
+  void draw(GraphicalContext& ctx, const SDL_Rect& clip, const SDL_Rect& dest);
 
   ~Texture();
 
@@ -59,6 +61,8 @@ class SpriteSheet {
   SDL_Rect operator[](size_t loc) const;
 
   void draw(GraphicalContext& ctx, int x, int y, int idx);
+
+  void draw(GraphicalContext& ctx, int x, int y, int scale, int idx);
 
  private:
   Texture t;

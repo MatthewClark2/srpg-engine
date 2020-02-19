@@ -128,7 +128,7 @@ Texture::Texture(GraphicalContext& ctx, SDL_Surface* surface) : width_(surface->
 
 void Texture::draw(GraphicalContext& ctx, int x, int y) {
   SDL_Rect quad = {x, y, width_, height_};
-  draw_scaled(ctx, quad);
+  draw(ctx, quad);
 }
 
 Texture::~Texture() {
@@ -137,13 +137,17 @@ Texture::~Texture() {
   }
 }
 
-void Texture::draw_scaled(GraphicalContext& ctx, SDL_Rect& render_quad) {
-  SDL_RenderCopy(ctx.renderer, texture_, nullptr, &render_quad);
+void Texture::draw(GraphicalContext& ctx, const SDL_Rect& dest) {
+  SDL_RenderCopy(ctx.renderer, texture_, nullptr, &dest);
 }
 
-void Texture::draw_clip(GraphicalContext& ctx, int x, int y, SDL_Rect& clip) {
+void Texture::draw(GraphicalContext& ctx, int x, int y, const SDL_Rect& clip) {
   SDL_Rect quad = {x, y, clip.w, clip.h};
-  SDL_RenderCopy(ctx.renderer, texture_, &clip, &quad);
+  draw(ctx, clip, quad);
+}
+
+void Texture::draw(GraphicalContext& ctx, const SDL_Rect& clip, const SDL_Rect& dest) {
+  SDL_RenderCopy(ctx.renderer, texture_, &clip, &dest);
 }
 
 void Texture::color(int r, int g, int b) {
@@ -189,6 +193,11 @@ SDL_Rect SpriteSheet::operator[](size_t loc) const {
 }
 
 void SpriteSheet::draw(GraphicalContext& ctx, int x, int y, int idx) {
-  SDL_Rect r = (*this)[idx];
-  t.draw_clip(ctx, x, y, r);
+  draw(ctx, x, y, 1, idx);
+}
+
+void SpriteSheet::draw(GraphicalContext& ctx, int x, int y, int scale, int idx) {
+  SDL_Rect source = (*this)[idx];
+  SDL_Rect dest = {x, y, source.w * scale, source.h * scale};
+  t.draw(ctx, source, dest);
 }

@@ -67,7 +67,7 @@ int color_modulation() {
       foreground.alpha(a);
 
       texture.draw(ctx, 0, 0);
-      foreground.draw_scaled(ctx, scale);
+      foreground.draw(ctx, scale);
 
       SDL_RenderPresent(ctx.renderer);
 

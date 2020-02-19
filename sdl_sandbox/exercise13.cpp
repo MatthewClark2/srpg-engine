@@ -13,7 +13,7 @@ int animations_and_vsync() {
   std::array<int, 4> positions = {1, 0, 5, 0};
 
   // Increase sprite size.
-
+  int scale = 3;
 
   bool done = false;
   SDL_Event e;
@@ -32,7 +32,8 @@ int animations_and_vsync() {
     SDL_RenderClear(ctx.renderer);
 
     // Draw the current frame of animation and mark the next one.
-    anim.draw(ctx, (WIDTH - anim.sprite_width_) / 2, (HEIGHT - anim.sprite_height_) / 2, positions[i]);
+    anim.draw(ctx, (WIDTH - anim.sprite_width_ * scale) / 2, (HEIGHT - anim.sprite_height_ * scale) / 2,
+              scale, positions[i]);
     i = (i + 1) % positions.size();
 
     // Display and wait.
