@@ -4,10 +4,6 @@
 #include "sdl.h"
 #include "exercises.h"
 
-extern "C" {
-#include <SDL_image.h>
-}
-
 SDL_Surface* optimize(SDL_Surface* window_surface, SDL_Surface* in) {
   SDL_Surface* opt = SDL_ConvertSurface(in, window_surface->format, 0);
 

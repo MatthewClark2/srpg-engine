@@ -13,7 +13,7 @@ int animations_and_vsync() {
   std::array<int, 4> positions = {1, 0, 5, 0};
 
   // Increase sprite size.
-  int scale = 3;
+  int scale = 4;
 
   bool done = false;
   SDL_Event e;
@@ -26,6 +26,8 @@ int animations_and_vsync() {
         done = true;
       }
     }
+
+    // TODO(matthew-c21): Add walk cycles for other directions.
 
     // Clear the screen.
     SDL_SetRenderDrawColor(ctx.renderer, 0xff, 0xff, 0xff, 0xff);
