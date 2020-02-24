@@ -40,16 +40,17 @@ struct UnitClass {
   UnitClass(const CoreStatSpread& stats, MovementType mov, UnitAttribute attrs, WeaponType weps);
 };
 
+// TODO(matthew-c21): When units are able to equip weapons, they should have class defined base weapons that are defaulted to when nothing is equipped.
 class Unit {
  public:
   Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-      const UnitClass& clazz, int baseWeaponRank);
+       const UnitClass& clazz, int baseWeaponRank);
 
   Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-      const UnitClass& clazz, int base_weapon_rank, int base_exp);
+       const UnitClass& clazz, int base_weapon_rank, int base_exp);
 
   Unit(const CoreStatSpread& base_stats, const CoreStatSpread& growths, UnitAttribute attributes,
-      const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level);
+       const UnitClass& clazz, int base_weapon_rank, int base_exp, int base_level);
 
   int rnk() const;
 
@@ -133,7 +134,7 @@ class Unit {
    * @param [out] failed an out parameter telling whether or not experience was successfully given.
    * @return true if gaining EXP resulted in a level up, and false otherwise.
    */
-  bool give_exp(int exp, bool &failed);
+  bool give_exp(int exp, bool& failed);
 
   /**
    * Get the stats of this unit after applying bonuses from equipment and class.

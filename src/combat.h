@@ -30,7 +30,6 @@ typedef const std::function<void()>& callback;
  */
 bool can_engage(const Unit& unit, int range = 1);
 
-// TODO(matthew-c21): Add error material here, since I want to avoid C++ errors as much as possible.
 /**
  * Perform combat initiated by the attacker.
  *
@@ -105,6 +104,11 @@ int calculate_crit(const Unit& unit);
  */
 int calculate_accuracy(const Unit& unit);
 
+/**
+ * Attack speed is based on the speed and attack stats of the unit, offset by any weapon weight.
+ * @param unit
+ * @return
+ */
 int calculate_attack_speed(const Unit& unit);
 
 /**
@@ -137,6 +141,10 @@ bool is_effective(const Unit& attacker, const Unit& target);
  * correctly.
  */
 int damage_per_attack(const Unit& attacker, const Unit& target);
+
+int accuracy_against(const Unit& attacker, const Unit& target);
+
+int crit_against(const Unit& attacker, const Unit& target);
 
 }  // end namespace srpg
 
