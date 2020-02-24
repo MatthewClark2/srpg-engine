@@ -1,9 +1,9 @@
-#ifndef SRPG_ENGINE_COMBAT_H
-#define SRPG_ENGINE_COMBAT_H
+#ifndef SRPG_ENGINE_COMBAT_HH
+#define SRPG_ENGINE_COMBAT_HH
 
 #include <functional>
-#include "unit.h"
-#include "weapon.h"
+#include "unit.hh"
+#include "weapon.hh"
 
 namespace srpg {
 
@@ -144,4 +144,4 @@ int crit_against(const Unit& attacker, const Unit& target);
 
 }  // end namespace srpg
 
-#endif //SRPG_ENGINE_COMBAT_H
+#endif //SRPG_ENGINE_COMBAT_HH

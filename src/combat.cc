@@ -1,6 +1,6 @@
 #include <random>
 
-#include "combat.h"
+#include "combat.hh"
 #include "random.hh"
 
 namespace srpg {

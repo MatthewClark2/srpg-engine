@@ -1,7 +1,7 @@
 #include <memory>
 
-#include "unit.h"
-#include "unit_attrs.h"
+#include "unit.hh"
+#include "unit_attrs.hh"
 
 
 namespace srpg {

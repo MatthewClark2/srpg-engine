@@ -1,7 +1,7 @@
-#ifndef SRPG_ENGINE_MAP_H
-#define SRPG_ENGINE_MAP_H
+#ifndef SRPG_ENGINE_MAP_HH
+#define SRPG_ENGINE_MAP_HH
 
-#include "unit.h"
+#include "unit.hh"
 
 class Texture;
 
@@ -63,4 +63,4 @@ int determine_movement_cost(const Unit& unit, Terrain terrain);
 
 }  // end namespace srpg
 
-#endif //SRPG_ENGINE_MAP_H
+#endif //SRPG_ENGINE_MAP_HH

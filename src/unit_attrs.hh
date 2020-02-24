@@ -1,5 +1,5 @@
-#ifndef SRPG_ENGINE_UNIT_ATTRS_H
-#define SRPG_ENGINE_UNIT_ATTRS_H
+#ifndef SRPG_ENGINE_UNIT_ATTRS_HH
+#define SRPG_ENGINE_UNIT_ATTRS_HH
 
 namespace srpg {
 
@@ -53,4 +53,4 @@ UnitAttribute operator~(UnitAttribute a);
 
 }  // end namespace srpg
 
-#endif //SRPG_ENGINE_UNIT_ATTRS_H
+#endif //SRPG_ENGINE_UNIT_ATTRS_HH

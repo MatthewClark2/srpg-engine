@@ -3,8 +3,8 @@
 //
 
 #include <boost/test/unit_test.hpp>
-#include "unit.h"
-#include "weapon.h"
+#include "unit.hh"
+#include "weapon.hh"
 
 using namespace srpg;
 

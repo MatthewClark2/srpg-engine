@@ -4,8 +4,8 @@
 #define SRPG_ENGINE_RANDOM_HH
 
 #include <random>
-#include "unit.h"
-#include "combat.h"
+#include "unit.hh"
+#include "combat.hh"
 
 namespace srpg {
 

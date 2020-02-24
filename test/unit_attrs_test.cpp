@@ -3,7 +3,7 @@
 //
 
 #include <boost/test/unit_test.hpp>
-#include "unit_attrs.h"
+#include "unit_attrs.hh"
 
 using namespace srpg;
 

@@ -1,11 +1,11 @@
-#ifndef SRPG_ENGINE_WEAPON_H
-#define SRPG_ENGINE_WEAPON_H
+#ifndef SRPG_ENGINE_WEAPON_HH
+#define SRPG_ENGINE_WEAPON_HH
 
 #include <cstdint>
 #include <functional>
 #include <memory>
 #include <utility>
-#include "unit_attrs.h"
+#include "unit_attrs.hh"
 
 // TODO(matthew-c21): Add builders.
 
@@ -122,4 +122,4 @@ class Staff : public Equipable {
 
 }
 
-#endif // SRPG_ENGINE_WEAPON_H
+#endif //SRPG_ENGINE_WEAPON_HH

@@ -1,12 +1,12 @@
-#ifndef SRPG_ENGINE_UNIT_H
-#define SRPG_ENGINE_UNIT_H
+#ifndef SRPG_ENGINE_UNIT_HH
+#define SRPG_ENGINE_UNIT_HH
 
 #include <cstdint>
 #include <optional>
 #include <unordered_set>
 #include <memory>
-#include "unit_attrs.h"
-#include "weapon.h"
+#include "unit_attrs.hh"
+#include "weapon.hh"
 
 namespace srpg {
 
@@ -201,4 +201,4 @@ class Unit {
 
 } // namespace srpg
 
-#endif //SRPG_ENGINE_UNIT_H
+#endif //SRPG_ENGINE_UNIT_HH
