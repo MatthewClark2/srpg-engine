@@ -1,7 +1,3 @@
-//
-// Created by matthew on 2/12/20.
-//
-
 #ifndef SRPG_ENGINE_MAP_H
 #define SRPG_ENGINE_MAP_H
 

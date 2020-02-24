@@ -1,7 +1,3 @@
-//
-// Created by matthew on 1/11/20.
-//
-
 #ifndef SRPG_ENGINE_UNIT_H
 #define SRPG_ENGINE_UNIT_H
 
@@ -167,7 +163,7 @@ class Unit {
    * capped at 0 (1 for HP). Note that HP (de)buffs only apply to max HP, not currently remaining HP.
    * @param mod total (de)buffs across all stats.
    */
-  void buff(CoreStatSpread mod);
+  void buff(const CoreStatSpread& mod);
 
   /*
    * Disabled until reclassing is enabled.

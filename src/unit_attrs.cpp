@@ -1,7 +1,3 @@
-//
-// Created by matthew on 1/26/20.
-//
-
 #include "unit_attrs.h"
 
 namespace srpg {

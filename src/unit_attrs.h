@@ -1,7 +1,3 @@
-//
-// Created by matthew on 1/26/20.
-//
-
 #ifndef SRPG_ENGINE_UNIT_ATTRS_H
 #define SRPG_ENGINE_UNIT_ATTRS_H
 

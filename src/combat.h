@@ -1,7 +1,3 @@
-//
-// Created by matthew on 2/2/20.
-//
-
 #ifndef SRPG_ENGINE_COMBAT_H
 #define SRPG_ENGINE_COMBAT_H
 

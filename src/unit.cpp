@@ -1,11 +1,4 @@
-//
-// Created by matthew on 1/11/20.
-//
-
 #include <memory>
-
-// Temporarily.
-#include <exception>
 
 #include "unit.h"
 #include "unit_attrs.h"
@@ -146,7 +139,7 @@ void Unit::offset_hp(int amount) {
   remaining_hp_ = std::min(-amount > remaining_hp_ ? 0 : remaining_hp_ + amount, max_hp);
 }
 
-void Unit::buff(CoreStatSpread mod) {
+void Unit::buff(const CoreStatSpread& mod) {
   // TODO(matthew-c21): Debuffs should probably be capped.
   buffs_ = buffs_ + mod;
 }
