@@ -7,7 +7,7 @@ option(TEST_SDL OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake_modules")
 
-add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+add_compile_options(-Wall -Wextra -Wpedantic)
 
 if(${TEST_SDL})
     add_subdirectory(sdl_sandbox)
