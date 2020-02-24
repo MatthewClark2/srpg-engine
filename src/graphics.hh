@@ -12,7 +12,7 @@ class SDLContext {
  private:
   SDL_Renderer* renderer_;
   SDL_Window* window_;
-  size_t width_, height_;
+  int width_, height_;
   size_t frame_;
 
  public:
@@ -26,15 +26,17 @@ class SDLContext {
 
   SDL_Window& window();
 
-  size_t width() const;
+  int width() const;
 
-  size_t height() const;
+  int height() const;
 
   size_t frame() const;
 
   void clear();
 
   void clear(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
+
+  void draw(SDL_Texture& texture, const SDL_Rect& source, const SDL_Rect& dest);
 
   void update();
 };
@@ -65,7 +67,7 @@ class SpriteSheet {
   int width_, height_;
 };
 
-SDL_Rect scale(const SDL_Rect& base, int factor);
+SDL_Rect scale(const SDL_Rect& base, double factor);
 
 template<typename T>
 class Entity {
@@ -113,7 +115,7 @@ class Entity {
   }
 
   void draw(SDLContext& ctx, const SDL_Rect& dest, size_t idx) {
-    SDL_RenderCopy(ctx.renderer(), sprites_.texture(), dest, sprites_[idx]);
+    ctx.draw(sprites_.texture(), sprites_[idx], dest);
   }
 };
 

@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "graphics.hh"
 #include "error.hh"
 
@@ -32,12 +34,14 @@ static SDL_Texture* load_texture(SDLContext& ctx, const std::string& filename, i
 
 SDLContext::SDLContext(size_t width, size_t height, int flags) : width_(width), height_(height), frame_(0) {
   // Init SDL.
-  if (!SDL_Init(SDL_INIT_EVERYTHING)) {
+  // if (!SDL_Init(SDL_INIT_EVERYTHING)) {
+  // TODO(matthew-c21): There seems to be an issue when initializing some components, mostly from udev.
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
     throw err::GenericError(SDL_GetError());
   }
 
   // Init SDL_Image.
-  if (!(IMG_Init(IMG_INIT_PNG) & IMG_INIT_PNG)) {
+  if (IMG_Init(IMG_INIT_PNG) != IMG_INIT_PNG) {
     throw err::GenericError(SDL_GetError());
   }
 
@@ -69,11 +73,11 @@ SDL_Window& SDLContext::window() {
   return *window_;
 }
 
-size_t SDLContext::width() const {
+int SDLContext::width() const {
   return width_;
 }
 
-size_t SDLContext::height() const {
+int SDLContext::height() const {
   return height_;
 }
 
@@ -91,6 +95,10 @@ void SDLContext::clear(Uint8 r, Uint8 g, Uint8 b, Uint8 a) {
 
 void SDLContext::update() {
   SDL_RenderPresent(renderer_);
+}
+
+void SDLContext::draw(SDL_Texture& texture, const SDL_Rect& source, const SDL_Rect& dest) {
+  SDL_RenderCopy(renderer_, &texture, &source, &dest);
 }
 
 SpriteSheet::SpriteSheet(SDLContext& ctx, const std::string& filename, int sprite_width, int sprite_height) {
@@ -136,8 +144,10 @@ SDL_Texture& SpriteSheet::texture() {
   return *texture_;
 }
 
-SDL_Rect scale(const SDL_Rect& base, int factor) {
-  return {base.x, base.y, base.w * factor, base.h * factor};
+SDL_Rect scale(const SDL_Rect& base, double factor) {
+  int w = static_cast<int>(base.w * factor);
+  int h = static_cast<int>(base.h * factor);
+  return {base.x, base.y, w, h};
 }
 
 } // namespace srpg
