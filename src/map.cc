@@ -34,25 +34,27 @@ void Tile::on_wait(Unit& unit) {
 }
 
 TiledMap::TiledMap(std::vector<Tile> tiles, int width, SpriteSheet& sprites, int vp_width, int vp_height)
-    : tiles_(std::move(tiles)), width_(width), height_(static_cast<int>(tiles.size()) / width), vp_width_(vp_width),
+    : tiles_(std::move(tiles)), width_(width), height_(static_cast<int>(tiles_.size()) / width), vp_width_(vp_width),
     vp_height_(vp_height), sprites_(sprites) {
 }
 
 void TiledMap::draw(SDLContext& ctx) {
-  auto x_scale = static_cast<double>(ctx.width()) / vp_width_;
-  auto y_scale = static_cast<double>(ctx.height()) / vp_height_;
-  auto factor = std::min(x_scale, y_scale);
+  auto block_size_w = ctx.width() / width_;
+  auto block_size_h = ctx.height() / height_;
 
-  int x, y;
-  x = y = 0;
+  int x_pos = 0, y_pos = 0;
 
   for (auto const& tile : tiles_) {
     auto clip = sprites_[tile.texture_index()];
 
-    x = (x + clip.w) % ctx.width();
-    y = (y + clip.h) / ctx.width();
+    SDL_Rect dest = {x_pos * block_size_w, y_pos * block_size_h, block_size_w, block_size_h};
 
-    auto dest = scale({x, y, clip.w, clip.h}, factor);
+    ++x_pos;
+
+    if ((x_pos % width_) < x_pos) {
+      y_pos++;
+      x_pos = 0;
+    }
 
     ctx.draw(sprites_.texture(), clip, dest);
   }
